@@ -3,5 +3,5 @@
 set -e
 
 cd pythonhere
-PYTHONPATH=. pytest --cov=. --cov-config=../.coveragerc --cov-report=xml ../tests
+PYTHONPATH=. xvfb-run --auto-servernum pytest --cov=. --cov-config=../.coveragerc --cov-report=xml ../tests
 coverage report

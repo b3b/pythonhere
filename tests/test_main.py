@@ -38,7 +38,3 @@ async def test_button_created(app_instance, there):
             )
         )
     assert out.getvalue() == "button there\n"
-
-
-def test_pass():
-    pass

@@ -12,6 +12,8 @@ Python Here
      :target: https://github.com/b3b/pythonhere/actions?workflow=CI
      :alt: CI Status
 .. image:: https://codecov.io/github/b3b/pythonhere/coverage.svg?branch=master
+    :target: https://codecov.io/github/b3b/pythonhere?branch=master
+    :alt: Code coverage Status
 .. end-badges
 
 Here is the Kivy based app to run code from the Jupyter magic %there.
