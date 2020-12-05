@@ -1,0 +1,23 @@
+# Common settings
+
+#:import hex kivy.utils.get_color_from_hex
+#:import sp kivy.metrics.sp
+
+#:set bg_color "#EEEEEE"
+#:set pallete ["#646464", "#306998", "#4B8BBE", "#FFD43B", "#FFE873"]
+#:set tc lambda text, index: f"[color={pallete[index]}]{text}[/color]"
+
+
+<Widget>:
+    canvas.before:
+        Color:
+            rgba: hex(bg_color)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<Label>:
+    font_size: "30sp"
+    font_name: "DejaVuSans"
+    color: hex(pallete[1])
+    markup: True

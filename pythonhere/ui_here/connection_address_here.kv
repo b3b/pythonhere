@@ -1,0 +1,18 @@
+#:import ConnectionAddressLabel ui_here.connection_address_here.ConnectionAddressLabel
+#:import ConnectionAddressInfoBox ui_here.connection_address_here.ConnectionAddressInfoBox
+
+
+<ConnectionAddressLabel>:
+    text: f"{tc('↳', 3)} {tc(self.address, 0)} ({self.interface})"
+
+
+<ConnectionAddressInfoBox>:
+    cols: 1
+
+    Label:
+        size_hint: 1, 1
+
+    Label:
+        size_hint: 1, None
+        text: f"Connect {tc('here', 3)} via"
+        text_size: self.size
