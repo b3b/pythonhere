@@ -37,5 +37,5 @@ def get_all_available_ipv4_adrresses() -> Iterator[Tuple[str, str]]:
             if adapter.name != "lo":
                 for ip_addr in adapter.ips:
                     # for IPv6 ip_addr.ip is a tuple
-                    if isinstance(ip.ip, str) and ip_addr.ip != "127.0.0.1":
+                    if isinstance(ip_addr.ip, str) and ip_addr.ip != "127.0.0.1":
                         yield (adapter.nice_name, ip_addr.ip)
