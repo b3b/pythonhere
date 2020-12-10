@@ -4,15 +4,30 @@
 
 <ConnectionAddressLabel>:
     text: f"{tc('↳', 3)} {tc(self.address, 0)} ({self.interface})"
+    size_hint: 1, None
+    text_size: self.size
+    height: self.texture_size[1]
+    font_size: "20sp"
 
 
 <ConnectionAddressInfoBox>:
     cols: 1
+    size_hint: 1, 1
+    padding: '20sp', 0, 0, 0
 
     Label:
+        text: f"Connect {tc('here', 3)} via"
+        size_hint: 1, None
+        text_size: self.size
+        height: self.texture_size[1]
+
+    ScrollView:
+        do_scroll_x: False
         size_hint: 1, 1
 
-    Label:
-        size_hint: 1, None
-        text: f"Connect {tc('here', 3)} via"
-        text_size: self.size
+        BoxLayout:
+            id: address_list
+            orientation: "vertical"
+            size_hint: 1, None
+            height: self.minimum_size[1]
+

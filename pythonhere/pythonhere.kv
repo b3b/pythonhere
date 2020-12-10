@@ -2,4 +2,16 @@
 #:include ui_here/common_here.kv
 #:include ui_here/connection_address_here.kv
 
-ConnectionAddressInfoBox:
+BoxLayout:
+    orientation: "vertical"
+
+    ActionBar:
+        pos_hint: {"top": 1}
+        ActionView:
+            ActionPrevious:
+                title: ""
+                with_previous: False
+
+    ConnectionAddressInfoBox:
+        id: address_info
+

@@ -25,11 +25,11 @@ class ConnectionAddressInfoBox(GridLayout):
     @mainthread
     def show_device_ip_addresses(self, _):
         """Fill box with information about available IPv4 addresses."""
+        box = self.ids.address_list
         try:
             for interface, address in get_all_available_ipv4_adrresses():
-                self.add_widget(
+                box.add_widget(
                     ConnectionAddressLabel(interface=interface, address=address)
                 )
         except Exception as exc:
             Logger.exception(exc)
-        self.add_widget(Label(size_hint=(1, 1)))

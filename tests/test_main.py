@@ -10,7 +10,7 @@ def test_dev_version_is_set():
 
 @pytest.mark.asyncio
 async def test_connect_label_shown(app_instance):
-    assert "Connect" in app_instance.root.children[-2].text
+    assert "Connect" in app_instance.root.ids.address_info.children[-1].text
 
 
 @pytest.mark.asyncio

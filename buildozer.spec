@@ -18,6 +18,9 @@ source.include_exts = py,png,kv,rst,rsa,ttf
 version.regex = __version__ = "(.*)"
 version.filename = %(source.dir)s/version_here.py
 
+orientation = all
+fullscreen = 0
+
 # requirements of the app
 requirements = 
              kivy==2.0.0rc4, 
