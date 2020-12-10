@@ -8,6 +8,8 @@ if platform == "android":
 
     NetworkInterface = autoclass("java.net.NetworkInterface")
     Inet4Address = autoclass("java.net.Inet4Address")
+else:
+    import ifaddr
 
 
 def get_android_interface_addresses(
@@ -31,4 +33,9 @@ def get_all_available_ipv4_adrresses() -> Iterator[Tuple[str, str]]:
         while interfaces.hasMoreElements():
             yield from get_android_interface_addresses(interfaces.nextElement())
     else:
-        yield ("???", "...")
+        for adapter in ifaddr.get_adapters():
+            if adapter.name != "lo":
+                for ip_addr in adapter.ips:
+                    # for IPv6 ip_addr.ip is a tuple
+                    if isinstance(ip.ip, str) and ip_addr.ip != "127.0.0.1":
+                        yield (adapter.nice_name, ip_addr.ip)

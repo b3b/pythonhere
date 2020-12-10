@@ -23,6 +23,7 @@ setup(
     install_requires=[
         "kivy==2.0.0rc4",
         "herethere>=0.0.2,<0.1.0",
+        "ifaddr",
     ],
     extras_require={
         "dev": [
