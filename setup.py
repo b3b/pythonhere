@@ -26,6 +26,10 @@ setup(
         "ifaddr",
     ],
     extras_require={
+        "magic": [
+            "ipython",
+            "ipywidgets",
+        ],
         "dev": [
             "black",
             "codecov",

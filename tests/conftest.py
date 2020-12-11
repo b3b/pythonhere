@@ -1,10 +1,14 @@
 import asyncio
+
+import nest_asyncio
 import pytest
 
 from herethere.everywhere import ConnectionConfig
 from herethere.there.client import Client
+from herethere.there.commands import ContextObject, there_group
 
 from main import PythonHereApp, run_ssh_server
+
 
 
 @pytest.fixture
@@ -35,3 +39,21 @@ async def there(app_instance, connection_config):
     await asyncio.wait_for(app_instance.ssh_server_started.wait(), 5)
     await client.connect(connection_config)
     yield client
+
+
+@pytest.fixture
+def nested_event_loop(event_loop):
+    nest_asyncio.apply()
+
+
+@pytest.fixture
+async def call_there_group(nested_event_loop, app_instance, there):
+    def _callable(args, code):
+        there_group(
+            args,
+            "test",
+            standalone_mode=False,
+            obj=ContextObject(client=there, code=code),
+        )
+
+    return _callable
