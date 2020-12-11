@@ -1,6 +1,4 @@
 import pytest
-from io import StringIO
-from contextlib import redirect_stdout
 from version_here import __version__
 
 
@@ -14,27 +12,30 @@ async def test_connect_label_shown(app_instance):
 
 
 @pytest.mark.asyncio
-async def test_code_line_executed(app_instance, there):
-    out = StringIO()
-    with redirect_stdout(out):
-        await there.runcode("print('hello there')")
-    assert out.getvalue() == "hello there\n"
+async def test_code_line_executed(capfd, app_instance, there):
+    await there.runcode("print('hello there')")
+    assert capfd.readouterr().out == "hello there\n"
 
 
 @pytest.mark.asyncio
-async def test_button_created(app_instance, there):
-    out = StringIO()
-    with redirect_stdout(out):
-        await there.runcode(
-            "\n".join(
-                (
-                    "from kivy.app import App",
-                    "from kivy.uix.button import Button",
-                    "app = App.get_running_app()",
-                    "root = app.root",
-                    "root.add_widget(Button(text='button there'))",
-                    "print(root.children[0].text)",
-                )
+async def test_button_created(capfd, app_instance, there):
+    await there.runcode(
+        "\n".join(
+            (
+                "from kivy.app import App",
+                "from kivy.uix.button import Button",
+                "app = App.get_running_app()",
+                "root = app.root",
+                "root.add_widget(Button(text='button there'))",
+                "print(root.children[0].text)",
             )
         )
-    assert out.getvalue() == "button there\n"
+    )
+    assert capfd.readouterr().out == "button there\n"
+
+
+@pytest.mark.asyncio
+async def test_root_object_is_in_context(capfd, app_instance, there):
+    await there.runcode('print(root)')
+    captured = capfd.readouterr()
+    assert captured.out.startswith('<kivy.uix.')

@@ -19,7 +19,7 @@ async def run_ssh_server(app):
     )
 
     try:
-        server = await start_server(config, namespace={})
+        server = await start_server(config, namespace=app.ssh_server_namespace)
         app.ssh_server_started.set()
     except Exception as exc:
         Logger.error("Python Here: SSH server start error")
@@ -43,8 +43,18 @@ class PythonHereApp(App):
 
     def __init__(self):
         super().__init__()
-        self.ssh_server_started = asyncio.Event()
         self.server_task = None
+        self.ssh_server_started = asyncio.Event()
+        self.ssh_server_namespace = {}
+
+    def build(self):
+        super().build()
+        self.ssh_server_namespace.update(
+            {
+                "app": self,
+                "root": self.root,
+            }
+        )
 
     def run_app(self):
         """Run application and SSH server tasks."""
