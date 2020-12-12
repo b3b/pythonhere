@@ -5,6 +5,9 @@ from kivy.app import App
 from kivy.logger import Logger
 
 from herethere.here import ServerConfig, start_server
+from patches_here import monkeypatch_kivy
+
+monkeypatch_kivy()
 
 
 async def run_ssh_server(app):
