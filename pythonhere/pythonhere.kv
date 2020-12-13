@@ -6,12 +6,18 @@ BoxLayout:
     orientation: "vertical"
 
     ActionBar:
+        id: top_bar
         pos_hint: {"top": 1}
         ActionView:
             ActionPrevious:
                 title: ""
                 with_previous: False
+            ActionButton:
+                text: 'Quit'
+                on_press: app.get_running_app().stop()
+            ActionButton:
+                text: 'Settings'
+                on_press: app.open_settings()
 
     ConnectionAddressInfoBox:
         id: address_info
-

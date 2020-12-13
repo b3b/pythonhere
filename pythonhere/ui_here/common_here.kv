@@ -46,3 +46,13 @@
         Rectangle:
             pos: self.x, self.y - 2
             size: self.width, 1
+
+<ActionButton>:
+    color: pallete[1]
+
+    canvas:
+        Color:
+            rgba: hex(pallete[2])
+        Line:
+            width: 1
+            points: self.x + sp(15), self.y + sp(6), self.right - sp(15), self.y + sp(6)

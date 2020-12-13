@@ -4,9 +4,12 @@ import asyncio
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.logger import Logger
+from kivy.uix.settings import Settings
 
 from herethere.here import ServerConfig, start_server
 from patches_here import monkeypatch_kivy
+from ui_here.settings_here import SettingTitleHere
+
 
 monkeypatch_kivy()
 
@@ -59,16 +62,22 @@ class PythonHereApp(App):
         self.ssh_server_namespace = {}
 
     def build(self):
+        """Initialize application UI."""
         reload_kivy_style()
-        from kivy.uix.settings import Settings
         self.settings_cls = Settings
+
         super().build()
+
         self.ssh_server_namespace.update(
             {
                 "app": self,
                 "root": self.root,
             }
         )
+
+    def build_settings(self, settings):
+        """Customize settings panel."""
+        settings.register_type("title", SettingTitleHere)
 
     def run_app(self):
         """Run application and SSH server tasks."""
