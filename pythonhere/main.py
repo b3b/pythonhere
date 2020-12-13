@@ -2,6 +2,7 @@
 import asyncio
 
 from kivy.app import App
+from kivy.lang import Builder
 from kivy.logger import Logger
 
 from herethere.here import ServerConfig, start_server
@@ -41,6 +42,13 @@ async def run_ssh_server(app):
     Logger.info("Python Here: SSH server closed")
 
 
+def reload_kivy_style():
+    """Reapply original Kivy style file."""
+    style = Builder.files[0]
+    Builder.unload_file(style)
+    Builder.load_file(style)
+
+
 class PythonHereApp(App):
     """Python Here main app."""
 
@@ -51,6 +59,9 @@ class PythonHereApp(App):
         self.ssh_server_namespace = {}
 
     def build(self):
+        reload_kivy_style()
+        from kivy.uix.settings import Settings
+        self.settings_cls = Settings
         super().build()
         self.ssh_server_namespace.update(
             {
