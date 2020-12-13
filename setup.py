@@ -21,7 +21,7 @@ setup(
     author="Alexander Shlemin",
     author_email="ash.b3b@gmail.com",
     install_requires=[
-        "kivy==2.0.0rc4",
+        "kivy>=2.0.0",
         "herethere>=0.0.2,<0.1.0",
         "ifaddr",
     ],

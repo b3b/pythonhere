@@ -23,7 +23,7 @@ fullscreen = 0
 
 # requirements of the app
 requirements = 
-             kivy==2.0.0rc4, 
+             kivy==2.0.0,
              python3, 
              android, 
              pyjnius,              
