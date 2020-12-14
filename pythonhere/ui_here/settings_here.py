@@ -61,10 +61,20 @@ class SettingPassword(SettingString):
             super().add_widget(widget, *largs)
 
 
-def build_settings(settings: Settings):
-    """Customize settings panel."""
-    settings.register_type("title", SettingTitleHere)
-    settings.register_type("password", SettingPassword)
+class SettingsHere(Settings):
+    """Customized settings panel."""
 
-    Config.setdefaults("pythonhere", {"login": "here", "password": "", "port": 8022})
-    settings.add_json_panel("Python Here", Config, data=SETTINGS_HERE)
+    def __init__(self, *args, **kargs):
+        super().__init__(*args, **kargs)
+
+        # remove "Close" button
+        self.interface.menu.remove_widget(self.interface.menu.ids.button)
+
+        self.register_type("title", SettingTitleHere)
+        self.register_type("password", SettingPassword)
+
+        Config.setdefaults(
+            "pythonhere", {"login": "here", "password": "", "port": 8022}
+        )
+        self.add_json_panel("Python Here", Config, data=SETTINGS_HERE)
+        self.add_kivy_panel()

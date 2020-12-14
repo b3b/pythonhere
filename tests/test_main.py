@@ -39,11 +39,12 @@ async def test_button_created(capfd, app_instance, there):
 async def test_root_object_is_in_context(capfd, app_instance, there):
     await there.runcode('print(root)')
     captured = capfd.readouterr()
-    assert captured.out.startswith('<kivy.uix.')
+    assert captured.out.startswith('<ui_here.layout_here.RootLayout object ')
 
 
 @pytest.mark.asyncio
 async def test_settings_opened_from_action_bar(app_instance, there):
-    assert not isinstance(app_instance.root_window.children[0], Settings)
-    await there.runcode("root.ids.settings_action.dispatch('on_press')")
-    assert isinstance(app_instance.root_window.children[0], Settings)
+    assert app_instance.root.ids.screen_manager.current != 'settings'
+    await there.runcode("root.ids.open_settings_action.dispatch('on_release')")
+    assert app_instance.root.ids.screen_manager.current == 'settings'
+

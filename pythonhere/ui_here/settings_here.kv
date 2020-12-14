@@ -2,6 +2,13 @@
 
 #:import SettingPassword ui_here.settings_here.SettingPassword
 
+<ScreenActionButton@ActionToggleButton>:
+    group: "screen"
+    screen: ""
+    allow_no_selection: False
+    on_release: app.root.switch_screen(self.screen)
+
+
 <SettingPassword>:
     PasswordLabel:
         pos: root.pos

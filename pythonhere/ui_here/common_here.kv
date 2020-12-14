@@ -9,19 +9,6 @@
 #:set tc lambda text, index: f"[color={pallete[index]}]{text}[/color]"
 
 
-
 <Label>:
     font_name: "DejaVuSans"
     markup: True
-
-
-<ActionButton>:
-
-    canvas:
-        Color:
-            rgba: hex(pallete[3])
-        Line:
-            width: 1
-            points: self.x + sp(20), self.y + sp(6), self.right - sp(20), self.y + sp(6)
-
-

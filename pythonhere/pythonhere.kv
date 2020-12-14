@@ -1,25 +1,42 @@
 #:kivy 1.0
+#:import RootLayout ui_here.layout_here.RootLayout
 #:include ui_here/common_here.kv
 #:include ui_here/connection_address_here.kv
 #:include ui_here/settings_here.kv
 
-BoxLayout:
+RootLayout:
     orientation: "vertical"
 
     ActionBar:
-        id: action_bar
         pos_hint: {"top": 1}
+
         ActionView:
             ActionPrevious:
                 title: ""
                 with_previous: False
-            ActionButton:
-                text: 'Quit'
-                on_press: app.get_running_app().stop()
-            ActionButton:
-                id: settings_action
-                text: 'Settings'
-                on_press: app.open_settings()
 
-    ConnectionAddressInfoBox:
-        id: address_info
+            ScreenActionButton:
+                id: open_here_action
+                text: f"%{tc('H', 3)}ere"
+                screen: "here"
+            ScreenActionButton:
+                id: open_settings_action
+                text: f"{tc('S', 3)}ettings"
+                screen: "settings"
+
+            ActionButton:
+                text: f"{tc('Q', 3)}uit"
+                on_release: app.get_running_app().stop()
+
+    ScreenManager:
+        id: screen_manager
+        Screen:
+        Screen:
+            id: here_screen
+            name: "here"
+            ConnectionAddressInfoBox:
+                id: address_info
+        Screen:
+            id: settings_screen
+            name: "settings"
+            SettingsHere:
