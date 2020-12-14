@@ -1,3 +1,4 @@
+#:kivy 1.0
 # Common settings
 
 #:import hex kivy.utils.get_color_from_hex
@@ -8,51 +9,19 @@
 #:set tc lambda text, index: f"[color={pallete[index]}]{text}[/color]"
 
 
-<Widget>:
-    canvas.before:
-        Color:
-            rgba: hex(bg_color)
-        Rectangle:
-            pos: self.pos
-            size: self.size
 
 <Label>:
-    font_size: "30sp"
     font_name: "DejaVuSans"
-    color: hex(pallete[1])
     markup: True
 
-<TextInput>:
-    foreground_color: hex(pallete[1])
-
-<Popup>:
-    title_color: pallete[1]
-
-<SettingTitleHere>:
-    text_size: self.width - 32, None
-    size_hint_y: None
-    height: max(dp(20), self.texture_size[1] + dp(20))
-    color: pallete[1]
-    font_size: '18sp'
-
-    canvas.before:
-        Color:
-            rgba: hex(pallete[4])[:3] + [.05]
-        Rectangle:
-            pos: self.pos
-            size: self.size
-        Color:
-            rgb: .2, .2, .2
-        Rectangle:
-            pos: self.x, self.y - 2
-            size: self.width, 1
 
 <ActionButton>:
-    color: pallete[1]
 
     canvas:
         Color:
-            rgba: hex(pallete[2])
+            rgba: hex(pallete[3])
         Line:
             width: 1
-            points: self.x + sp(15), self.y + sp(6), self.right - sp(15), self.y + sp(6)
+            points: self.x + sp(20), self.y + sp(6), self.right - sp(20), self.y + sp(6)
+
+

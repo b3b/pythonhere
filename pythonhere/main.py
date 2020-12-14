@@ -44,13 +44,6 @@ async def run_ssh_server(app):
     Logger.info("Python Here: SSH server closed")
 
 
-def reload_kivy_style():
-    """Reapply original Kivy style file."""
-    style = Builder.files[0]
-    Builder.unload_file(style)
-    Builder.load_file(style)
-
-
 class PythonHereApp(App):
     """Python Here main app."""
 
@@ -62,7 +55,6 @@ class PythonHereApp(App):
 
     def build(self):
         """Initialize application UI."""
-        reload_kivy_style()
         self.settings_cls = Settings
 
         super().build()

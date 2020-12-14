@@ -1,9 +1,10 @@
+#:kivy 1.0
 #:import ConnectionAddressLabel ui_here.connection_address_here.ConnectionAddressLabel
 #:import ConnectionAddressInfoBox ui_here.connection_address_here.ConnectionAddressInfoBox
 
 
 <ConnectionAddressLabel>:
-    text: f"{tc('↳', 3)} {tc(self.address, 0)} ({self.interface})"
+    text: f"{tc('↳', 3)} {tc(self.address, 2)} ({self.interface})"
     size_hint: 1, None
     text_size: self.size
     height: self.texture_size[1]
@@ -20,6 +21,7 @@
         size_hint: 1, None
         text_size: self.size
         height: self.texture_size[1]
+        font_size: "30sp"
 
     ScrollView:
         do_scroll_x: False
