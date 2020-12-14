@@ -1,5 +1,6 @@
 import pytest
 from version_here import __version__
+from kivy.uix.settings import Settings
 
 
 def test_dev_version_is_set():
@@ -39,3 +40,10 @@ async def test_root_object_is_in_context(capfd, app_instance, there):
     await there.runcode('print(root)')
     captured = capfd.readouterr()
     assert captured.out.startswith('<kivy.uix.')
+
+
+@pytest.mark.asyncio
+async def test_settings_opened_from_action_bar(app_instance, there):
+    assert not isinstance(app_instance.root_window.children[0], Settings)
+    await there.runcode("root.ids.settings_action.dispatch('on_press')")
+    assert isinstance(app_instance.root_window.children[0], Settings)

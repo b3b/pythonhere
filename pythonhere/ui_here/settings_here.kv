@@ -1,0 +1,9 @@
+#:kivy 1.0
+
+#:import SettingPassword ui_here.settings_here.SettingPassword
+
+<SettingPassword>:
+    PasswordLabel:
+        pos: root.pos
+        font_size: "15sp"
+        text: '*' * len(root.value or '')

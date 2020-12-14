@@ -1,12 +1,13 @@
 #:kivy 1.0
 #:include ui_here/common_here.kv
 #:include ui_here/connection_address_here.kv
+#:include ui_here/settings_here.kv
 
 BoxLayout:
     orientation: "vertical"
 
     ActionBar:
-        id: top_bar
+        id: action_bar
         pos_hint: {"top": 1}
         ActionView:
             ActionPrevious:
@@ -16,6 +17,7 @@ BoxLayout:
                 text: 'Quit'
                 on_press: app.get_running_app().stop()
             ActionButton:
+                id: settings_action
                 text: 'Settings'
                 on_press: app.open_settings()
 

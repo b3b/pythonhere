@@ -8,8 +8,7 @@ from kivy.uix.settings import Settings
 
 from herethere.here import ServerConfig, start_server
 from patches_here import monkeypatch_kivy
-from ui_here.settings_here import SettingTitleHere
-
+from ui_here.settings_here import build_settings
 
 monkeypatch_kivy()
 
@@ -77,7 +76,7 @@ class PythonHereApp(App):
 
     def build_settings(self, settings):
         """Customize settings panel."""
-        settings.register_type("title", SettingTitleHere)
+        build_settings(settings)
 
     def run_app(self):
         """Run application and SSH server tasks."""
