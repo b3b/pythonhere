@@ -66,5 +66,5 @@ def build_settings(settings: Settings):
     settings.register_type("title", SettingTitleHere)
     settings.register_type("password", SettingPassword)
 
-    Config.setdefaults("pythonhere", {"username": "here", "password": "", "port": 8022})
+    Config.setdefaults("pythonhere", {"login": "here", "password": "", "port": 8022})
     settings.add_json_panel("Python Here", Config, data=SETTINGS_HERE)
