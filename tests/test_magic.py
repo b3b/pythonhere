@@ -14,8 +14,7 @@ async def test_kv_command_runcode_called(call_there_group, mocker):
     assert "Builder.load_string(r'''Label: '''" in ctx_obj.code
 
 @pytest.mark.asyncio
-async def test_kv_command_executed(capfd, app_instance, call_there_group):
     call_there_group(["kv"], "Label:\n    text: '''Hello there'''")
     captured = capfd.readouterr()
     assert not captured.out and not captured.err
-    assert app_instance.root.children[0].text == 'Hello there'
+    assert app_instance.root.text == 'Hello there'

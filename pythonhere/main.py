@@ -2,7 +2,6 @@
 import asyncio
 
 from kivy.app import App
-from kivy.lang import Builder
 from kivy.logger import Logger
 from kivy.uix.settings import Settings
 
