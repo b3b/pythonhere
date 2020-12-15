@@ -2,13 +2,14 @@ import asyncio
 
 import nest_asyncio
 import pytest
+from kivy.config import Config
+from kivy.core.window import Window
 
 from herethere.everywhere import ConnectionConfig
 from herethere.there.client import Client
 from herethere.there.commands import ContextObject, there_group
 
 from main import PythonHereApp, run_ssh_server
-
 
 
 @pytest.fixture
@@ -22,7 +23,12 @@ def connection_config():
 
 
 @pytest.fixture
-async def app_instance():
+def app_config():
+    Config.read("../tests/config.ini")
+
+
+@pytest.fixture
+async def app_instance(capfd, app_config):
     app = PythonHereApp()
     app_task = asyncio.ensure_future(app.async_run_app())
     server_task = asyncio.ensure_future(run_ssh_server(app))
@@ -31,6 +37,8 @@ async def app_instance():
     server_task.cancel()
     app_task.cancel()
     await asyncio.gather(app_task, server_task)
+    app.root.clear_widgets()
+    Window.children.clear()
 
 
 @pytest.fixture

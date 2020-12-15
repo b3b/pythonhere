@@ -1,4 +1,6 @@
 """Settings panel widgets."""
+from typing import Any, Dict
+
 from kivy.config import Config
 from kivy.properties import ObjectProperty  # pylint: disable=no-name-in-module
 from kivy.uix.label import Label
@@ -9,26 +11,26 @@ SETTINGS_HERE = """
 [
     {
         "type": "title",
-        "title": "SSH server"
+        "title": "%here server"
     },
     {
         "type": "string",
-        "title": "Login",
-        "desc": "SSH login",
+        "title": "Username",
+        "desc": "Username to ask (THERE_USERNAME)",
         "section": "pythonhere",
-        "key": "login"
+        "key": "username"
     },
     {
         "type": "password",
         "title": "Password",
-        "desc": "SSH password",
+        "desc": "Password to ask (THERE_PASSWORD)",
         "section": "pythonhere",
         "key": "password"
     },
     {
         "type": "numeric",
         "title": "Port",
-        "desc": "SSH server port number",
+        "desc": "Server port number, to start on this device (THERE_PORT)",
         "section": "pythonhere",
         "key": "port"
     }
@@ -74,7 +76,15 @@ class SettingsHere(Settings):
         self.register_type("password", SettingPassword)
 
         Config.setdefaults(
-            "pythonhere", {"login": "here", "password": "", "port": 8022}
+            "pythonhere", {"username": "here", "password": "", "port": 8022}
         )
         self.add_json_panel("Python Here", Config, data=SETTINGS_HERE)
         self.add_kivy_panel()
+
+    def get_pythonhere_config(self) -> Dict[str, Any]:
+        """Extract server parts of the config."""
+        return {
+            "username": Config.get("pythonhere", "username"),
+            "password": Config.get("pythonhere", "password"),
+            "port": Config.getint("pythonhere", "port"),
+        }

@@ -1,0 +1,59 @@
+#:import FallOutTransition kivy.uix.screenmanager.FallOutTransition
+#:import App kivy.app.App
+
+<LoadingImage@Image>:
+    source: "data/images/image-loading.zip"
+    allow_stretch: True
+    pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+    size_hint: None, None
+    size: sp(100), sp(100)
+
+<StackLabel@Label>:
+    size_hint: None, None
+    font_size: "20sp"
+    size: self.texture_size
+
+<ServerNotConfigured@Screen>:
+    name: "not_configured"
+    StackLayout:
+        orientation: "lr-tb"
+        padding: sp(20), 0, 0, 0
+        StackLabel:
+            text: "To start the "
+        StackLabel:
+            text: f"{tc('Python', 1)}{tc('here', 3)}, "
+        StackLabel:
+            text: "you "
+        StackLabel:
+            text: "need to "
+        StackLabel:
+            text: "edit the "
+        Button:
+            text: "Settings"
+            font_size: "20sp"
+            size_hint: None, None
+            width: self.texture_size[0] + sp(20)
+            height: sp(30)
+            on_release: App.get_running_app().root.switch_screen(ScreenName.settings)
+        StackLabel:
+            text: " section."
+
+<StartingServerScreen@Screen>:
+    Label:
+        text: f"Waiting {tc('Python', 1)}{tc('here', 3)} to start"
+        font_size: "30sp"
+    LoadingImage:
+
+<ServerScreenManager>:
+    app: app
+    transition: FallOutTransition()
+    Screen:
+        LoadingImage:
+    ServerNotConfigured:
+    Screen:
+        name: ServerState.not_configured
+    StartingServerScreen:
+        name: ServerState.starting_server
+    Screen:
+        name: ServerState.ready
+        ConnectionAddressInfoBox:

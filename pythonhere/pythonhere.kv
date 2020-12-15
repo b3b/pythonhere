@@ -1,7 +1,11 @@
 #:kivy 1.0
 #:import RootLayout ui_here.layout_here.RootLayout
+#:import ScreenName enum_here.ScreenName
+#:import ServerState enum_here.ServerState
+#:import ServerScreenManager ui_here.server_screen_here.ServerScreenManager
 #:include ui_here/common_here.kv
 #:include ui_here/connection_address_here.kv
+#:include ui_here/server_screen_here.kv
 #:include ui_here/settings_here.kv
 
 RootLayout:
@@ -18,11 +22,11 @@ RootLayout:
             ScreenActionButton:
                 id: open_here_action
                 text: f"%{tc('H', 3)}ere"
-                screen: "here"
+                screen: ScreenName.here
             ScreenActionButton:
                 id: open_settings_action
                 text: f"{tc('S', 3)}ettings"
-                screen: "settings"
+                screen: ScreenName.settings
 
             ActionButton:
                 text: f"{tc('Q', 3)}uit"
@@ -33,10 +37,11 @@ RootLayout:
         Screen:
         Screen:
             id: here_screen
-            name: "here"
-            ConnectionAddressInfoBox:
-                id: address_info
+            name: ScreenName.here
+            ServerScreenManager:
+                id: here_screen_manager
         Screen:
             id: settings_screen
-            name: "settings"
+            name: ScreenName.settings
             SettingsHere:
+                id: settings

@@ -8,8 +8,9 @@ def test_dev_version_is_set():
 
 
 @pytest.mark.asyncio
-async def test_connect_label_shown(app_instance):
-    assert "Connect" in app_instance.root.ids.address_info.children[-1].text
+async def test_server_ready_screen_shown(app_instance):
+    app_instance.root.ids.here_screen_manager.update()
+    assert app_instance.root.ids.here_screen_manager.current == 'ready'
 
 
 @pytest.mark.asyncio
@@ -43,8 +44,7 @@ async def test_root_object_is_in_context(capfd, app_instance, there):
 
 
 @pytest.mark.asyncio
-async def test_settings_opened_from_action_bar(app_instance, there):
-    assert app_instance.root.ids.screen_manager.current != 'settings'
+async def test_settings_opened_from_action_bar(capfd, app_instance, there):
+    assert app_instance.root.ids.screen_manager.current != "settings"
     await there.runcode("root.ids.open_settings_action.dispatch('on_release')")
-    assert app_instance.root.ids.screen_manager.current == 'settings'
-
+    assert app_instance.root.ids.screen_manager.current == "settings"

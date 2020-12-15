@@ -3,8 +3,8 @@ import asyncio
 
 from kivy.app import App
 from kivy.logger import Logger
-from kivy.uix.settings import Settings
 
+from enum_here import ScreenName
 from herethere.here import ServerConfig, start_server
 from patches_here import monkeypatch_kivy
 
@@ -13,13 +13,17 @@ monkeypatch_kivy()
 
 async def run_ssh_server(app):
     """Start and run SSH server."""
+    Logger.debug("Python Here: wait for %here settings")
+    try:
+        await app.ssh_server_config_ready.wait()
+    except asyncio.CancelledError:
+        return
+
     config = ServerConfig(
         host="",
-        port=8022,
-        username="here",
-        password="there",
         chroot=app.user_data_dir or "",
         key_path="./key.rsa",
+        **app.get_pythonhere_config(),
     )
 
     try:
@@ -48,15 +52,16 @@ class PythonHereApp(App):
     def __init__(self):
         super().__init__()
         self.server_task = None
+        self.settings = None
+        self.ssh_server_config_ready = asyncio.Event()
         self.ssh_server_started = asyncio.Event()
         self.ssh_server_namespace = {}
 
     def build(self):
         """Initialize application UI."""
-        self.settings_cls = Settings
-
         super().build()
-        self.root.switch_screen("here")
+
+        self.settings = self.root.ids.settings
 
         self.ssh_server_namespace.update(
             {
@@ -64,6 +69,10 @@ class PythonHereApp(App):
                 "root": self.root,
             }
         )
+
+        self.settings.bind(on_config_change=self.handle_config_change)
+        self.update_server_config_status()
+        self.root.switch_screen(ScreenName.here)
 
     def run_app(self):
         """Run application and SSH server tasks."""
@@ -83,6 +92,22 @@ class PythonHereApp(App):
 
         if self.server_task:
             self.server_task.cancel()
+
+    def update_server_config_status(self):
+        """Check and update value of the `ssh_server_config_ready`."""
+        if all(self.get_pythonhere_config().values()):
+            self.ssh_server_config_ready.set()
+
+    def get_pythonhere_config(self):
+        """Return user settings for SSH server."""
+        return self.settings.get_pythonhere_config()
+
+    def handle_config_change(
+        self, settings, config, section, key, value
+    ):  # pylint: disable=too-many-arguments, unused-argument
+        """Config change handler."""
+        if section == "pythonhere":
+            self.update_server_config_status()
 
     def on_start(self):
         """App start handler."""
