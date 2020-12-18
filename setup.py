@@ -24,12 +24,11 @@ setup(
         "kivy>=2.0.0",
         "herethere>=0.0.2,<0.1.0",
         "ifaddr",
+        "ipython",
+        "ipywidgets",
+        "nest_asyncio",
     ],
     extras_require={
-        "magic": [
-            "ipython",
-            "ipywidgets",
-        ],
         "dev": [
             "black",
             "codecov",
