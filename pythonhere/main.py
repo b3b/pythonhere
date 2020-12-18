@@ -1,4 +1,4 @@
-"""Python Here app."""
+"""PythonHere app."""
 import asyncio
 
 from kivy.app import App
@@ -13,7 +13,7 @@ monkeypatch_kivy()
 
 async def run_ssh_server(app):
     """Start and run SSH server."""
-    Logger.debug("Python Here: wait for %here settings")
+    Logger.debug("PythonHere: wait for %here settings")
     try:
         await app.ssh_server_config_ready.wait()
     except asyncio.CancelledError:
@@ -30,24 +30,24 @@ async def run_ssh_server(app):
         server = await start_server(config, namespace=app.ssh_server_namespace)
         app.ssh_server_started.set()
     except Exception as exc:
-        Logger.error("Python Here: SSH server start error")
+        Logger.error("PythonHere: SSH server start error")
         Logger.exception(exc)
         raise
 
     try:
         await server.wait_closed()
     except asyncio.CancelledError:
-        Logger.info("Python Here: SSH server task canceled")
+        Logger.info("PythonHere: SSH server task canceled")
         server.close()
     except Exception as exc:
-        Logger.errror("Python Here: SSH server stop by exception")
+        Logger.errror("PythonHere: SSH server stop by exception")
         Logger.exception(exc)
         raise
-    Logger.info("Python Here: SSH server closed")
+    Logger.info("PythonHere: SSH server closed")
 
 
 class PythonHereApp(App):
-    """Python Here main app."""
+    """PythonHere main app."""
 
     def __init__(self):
         super().__init__()
@@ -56,6 +56,7 @@ class PythonHereApp(App):
         self.ssh_server_config_ready = asyncio.Event()
         self.ssh_server_started = asyncio.Event()
         self.ssh_server_namespace = {}
+        self.icon = "data/logo/logo-32.png"
 
     def build(self):
         """Initialize application UI."""
@@ -84,9 +85,9 @@ class PythonHereApp(App):
         """Run app asynchronously."""
         try:
             await self.async_run(async_lib="asyncio")
-            Logger.info("Python Here: async run completed")
+            Logger.info("PythonHere: async run completed")
         except asyncio.CancelledError:
-            Logger.info("Python Here: app main task canceled")
+            Logger.info("PythonHere: app main task canceled")
         except Exception as exc:
             Logger.exception(exc)
 
@@ -111,11 +112,11 @@ class PythonHereApp(App):
 
     def on_start(self):
         """App start handler."""
-        Logger.info("Python Here: app started")
+        Logger.info("PythonHere: app started")
 
     def on_stop(self):
         """App stop handler."""
-        Logger.info("Python Here: app stopped")
+        Logger.info("PythonHere: app stopped")
 
 
 if __name__ == "__main__":

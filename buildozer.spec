@@ -1,7 +1,7 @@
 [app]
 
 # title of the application
-title = Python Here
+title = PythonHere
 
 # package name
 package.name = pythonhere
@@ -20,6 +20,12 @@ version.filename = %(source.dir)s/version_here.py
 
 orientation = all
 fullscreen = 0
+
+# (str) Presplash of the application
+presplash.filename = %(source.dir)s/data/logo/logo-128.png
+
+# (str) Icon of the application
+icon.filename = %(source.dir)s/data/logo/logo-128.png
 
 # requirements of the app
 requirements = 

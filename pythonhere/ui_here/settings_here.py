@@ -78,7 +78,7 @@ class SettingsHere(Settings):
         Config.setdefaults(
             "pythonhere", {"username": "here", "password": "", "port": 8022}
         )
-        self.add_json_panel("Python Here", Config, data=SETTINGS_HERE)
+        self.add_json_panel("PythonHere", Config, data=SETTINGS_HERE)
         self.add_kivy_panel()
 
     def get_pythonhere_config(self) -> Dict[str, Any]:

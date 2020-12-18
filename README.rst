@@ -1,5 +1,5 @@
-Python Here
-===========
+PythonHere
+==========
 
 .. start-badges
 .. image:: https://img.shields.io/pypi/v/pythonhere.svg
