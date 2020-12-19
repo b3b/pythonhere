@@ -18,6 +18,7 @@ coverage.xml
 *.cover
 .pytest_cache/
 
+*.ipynb
 .ipynb_checkpoints
 
 *~
