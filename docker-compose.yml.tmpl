@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+
+  notebook:
+    image: herethere/pythonhere:latest
+    # build: .
+    ports:
+      - 8889:8888
+    # Uncomment and fill in environment, to override values from there.env config
+    # environment:
+    #   - THERE_HOST=
+    #   - THERE_PORT=8022
+    #   - THERE_USER=
+    #   - THERE_PASSWORD=
+    volumes:
+      - ./work:/home/jovyan/work

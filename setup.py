@@ -14,6 +14,8 @@ setup(
     version=main_ns["__version__"],
     packages=[
         "pythonhere",
+        "pythonhere.magic_here",
+        "pythonhere.ui_here",
     ],
     description="Here is the Kivy based app to run code from the Jupyter magic %there",
     long_description=long_description,
@@ -34,17 +36,21 @@ setup(
             "codecov",
             "docutils",
             "flake8",
+            "jupytext",
             "pylint",
             "pytest",
             "pytest-asyncio",
             "pytest-cov",
             "pytest-mock",
         ],
+        "docker": [
+            "jupytext==1.7.1"
+        ]
     },
     url="https://github.com/b3b/ipython-pythonhere",
     # https://pypi.org/classifiers/
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 2 - Pre-Alpha",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
