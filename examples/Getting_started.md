@@ -30,7 +30,7 @@ from kivy import platform
 print("Hello from", platform)
 ```
 
-#### Use widgets
+#### Use Kivy widgets
 
 ```python
 %%there
@@ -40,7 +40,7 @@ from kivy.uix.label import Label
 root.clear_widgets()  # Remove all current childrens
 
 # And add the new one
-widget = Label(text="Kivy", font_size="80sp")
+widget = Label(text="Kivy", font_size="50sp")
 root.add_widget(widget)
 ```
 
