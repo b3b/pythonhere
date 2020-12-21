@@ -71,9 +71,12 @@ class PythonHereApp(App):
             }
         )
 
-        self.settings.bind(on_config_change=self.handle_config_change)
         self.update_server_config_status()
-        self.root.switch_screen(ScreenName.here)
+        self.root.switch_screen(
+            ScreenName.here
+            if self.ssh_server_config_ready.is_set()
+            else ScreenName.settings
+        )
 
     def run_app(self):
         """Run application and SSH server tasks."""
@@ -102,13 +105,6 @@ class PythonHereApp(App):
     def get_pythonhere_config(self):
         """Return user settings for SSH server."""
         return self.settings.get_pythonhere_config()
-
-    def handle_config_change(
-        self, settings, config, section, key, value
-    ):  # pylint: disable=too-many-arguments, unused-argument
-        """Config change handler."""
-        if section == "pythonhere":
-            self.update_server_config_status()
 
     def on_start(self):
         """App start handler."""

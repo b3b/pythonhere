@@ -1,17 +1,25 @@
 """Settings panel widgets."""
 from typing import Any, Dict
 
+from kivy.app import App
 from kivy.config import Config
-from kivy.properties import ObjectProperty  # pylint: disable=no-name-in-module
+from kivy.properties import (  # pylint: disable=no-name-in-module
+    BooleanProperty,
+    ObjectProperty,
+    StringProperty,
+)
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.label import Label
 from kivy.uix.settings import Settings, SettingString
+
+from enum_here import ScreenName
 
 
 SETTINGS_HERE = """
 [
     {
         "type": "title",
-        "title": "%here server"
+        "title": "%here server settings"
     },
     {
         "type": "string",
@@ -33,16 +41,12 @@ SETTINGS_HERE = """
         "desc": "Server port number, to start on this device (THERE_PORT)",
         "section": "pythonhere",
         "key": "port"
+    },
+    {
+        "type": "start_server_button"
     }
 ]
 """
-
-
-class SettingTitleHere(Label):
-    """A simple title label, used to organize the settings in sections."""
-
-    title = Label.text
-    panel = ObjectProperty(None)
 
 
 class PasswordLabel(Label):
@@ -63,6 +67,28 @@ class SettingPassword(SettingString):
             super().add_widget(widget, *largs)
 
 
+class SettingButton(AnchorLayout):
+    """Button for settings panel."""
+
+    title = StringProperty("")
+    panel = ObjectProperty(None)
+    active = BooleanProperty(True)
+
+    def on_release(self):
+        """Handler for button `on_release` event."""
+        ...
+
+
+class StartServerSettingButton(SettingButton):
+    """Button to start %here."""
+
+    def on_release(self):
+        """Start the server."""
+        app = App.get_running_app()
+        app.update_server_config_status()
+        app.root.switch_screen(ScreenName.here)
+
+
 class SettingsHere(Settings):
     """Customized settings panel."""
 
@@ -71,9 +97,8 @@ class SettingsHere(Settings):
 
         # remove "Close" button
         self.interface.menu.remove_widget(self.interface.menu.ids.button)
-
-        self.register_type("title", SettingTitleHere)
         self.register_type("password", SettingPassword)
+        self.register_type("start_server_button", StartServerSettingButton)
 
         Config.setdefaults(
             "pythonhere", {"username": "here", "password": "", "port": 8022}

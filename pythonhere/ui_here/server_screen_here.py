@@ -1,4 +1,5 @@
 """%here server screen."""
+from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager
 
@@ -14,8 +15,9 @@ class ServerScreenManager(ScreenManager):
 
     def update(self, _=None):
         """Determines server state, and switch to appropriate screen."""
-        if self.app.ssh_server_config_ready.is_set():
-            if self.app.ssh_server_started.is_set():
+        app = App.get_running_app()
+        if app.ssh_server_config_ready.is_set():
+            if app.ssh_server_started.is_set():
                 self.current = ServerState.ready
                 Clock.unschedule(self.update_event)
             else:

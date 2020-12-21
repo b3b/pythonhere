@@ -1,0 +1,8 @@
+#:kivy 1.0
+#:import App kivy.app.App
+
+<ScreenActionButton@ActionToggleButton>:
+    group: "screen"
+    screen: ""
+    allow_no_selection: False
+    on_release: App.get_running_app().root.switch_screen(self.screen)

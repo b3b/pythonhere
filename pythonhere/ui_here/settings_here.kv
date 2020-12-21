@@ -1,17 +1,26 @@
 #:kivy 1.0
-
-#:import SettingPassword ui_here.settings_here.SettingPassword
 #:import App kivy.app.App
-
-<ScreenActionButton@ActionToggleButton>:
-    group: "screen"
-    screen: ""
-    allow_no_selection: False
-    on_release: App.get_running_app().root.switch_screen(self.screen)
-
+#:import SettingPassword ui_here.settings_here.SettingPassword
 
 <SettingPassword>:
     PasswordLabel:
         pos: root.pos
         font_size: "15sp"
         text: '*' * len(root.value or '')
+
+<SettingButton>:
+    size_hint: 1, None
+    height: sp(60)
+    opacity: 1 if self.active else 0
+
+    Button:
+        size_hint: None, None
+        width: self.texture_size[0] + sp(20)
+        height: sp(40)
+        text: root.title
+        disabled: not root.active
+        on_release: root.on_release()
+
+
+<StartServersettingbutton>:
+    title: f"{tc('▶', 3)} Start the server"
