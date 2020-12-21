@@ -22,7 +22,7 @@ orientation = all
 fullscreen = 0
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/data/logo/logo-128.png
+presplash.filename = %(source.dir)s/data/logo/logo-splash.png
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/data/logo/logo-128.png
