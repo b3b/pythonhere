@@ -1,5 +1,6 @@
 """PythonHere app."""
 import asyncio
+from typing import Any, Dict
 
 from kivy.app import App
 from kivy.logger import Logger
@@ -73,6 +74,10 @@ class PythonHereApp(App):
         """Return user settings for SSH server."""
         return self.settings.get_pythonhere_config()
 
+    def update_ssh_server_namespace(self, namespace: Dict[str, Any]):
+        """Update SSH server namespace."""
+        self.ssh_server_namespace.update(namespace)
+
     def on_start(self):
         """App start handler."""
         Logger.info("PythonHere: app started")
@@ -83,8 +88,10 @@ class PythonHereApp(App):
 
     def on_ssh_connection_made(self):
         """New SSH client connected handler."""
+        Logger.info("PythonHere: new SSH client connected")
         if not self.ssh_server_connected.is_set():
             self.ssh_server_connected.set()
+            Logger.info("PythonHere: reset window environment")
             self.ssh_server_namespace["root"] = reset_window_environment()
 
 
