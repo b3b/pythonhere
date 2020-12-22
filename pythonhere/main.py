@@ -5,45 +5,11 @@ from kivy.app import App
 from kivy.logger import Logger
 
 from enum_here import ScreenName
-from herethere.here import ServerConfig, start_server
 from patches_here import monkeypatch_kivy
+from server_here import run_ssh_server
+from window_here import reset_window_environment
 
 monkeypatch_kivy()
-
-
-async def run_ssh_server(app):
-    """Start and run SSH server."""
-    Logger.debug("PythonHere: wait for %here settings")
-    try:
-        await app.ssh_server_config_ready.wait()
-    except asyncio.CancelledError:
-        return
-
-    config = ServerConfig(
-        host="",
-        chroot=app.user_data_dir or "",
-        key_path="./key.rsa",
-        **app.get_pythonhere_config(),
-    )
-
-    try:
-        server = await start_server(config, namespace=app.ssh_server_namespace)
-        app.ssh_server_started.set()
-    except Exception as exc:
-        Logger.error("PythonHere: SSH server start error")
-        Logger.exception(exc)
-        raise
-
-    try:
-        await server.wait_closed()
-    except asyncio.CancelledError:
-        Logger.info("PythonHere: SSH server task canceled")
-        server.close()
-    except Exception as exc:
-        Logger.errror("PythonHere: SSH server stop by exception")
-        Logger.exception(exc)
-        raise
-    Logger.info("PythonHere: SSH server closed")
 
 
 class PythonHereApp(App):
@@ -55,6 +21,7 @@ class PythonHereApp(App):
         self.settings = None
         self.ssh_server_config_ready = asyncio.Event()
         self.ssh_server_started = asyncio.Event()
+        self.ssh_server_connected = asyncio.Event()
         self.ssh_server_namespace = {}
         self.icon = "data/logo/logo-32.png"
 
@@ -113,6 +80,12 @@ class PythonHereApp(App):
     def on_stop(self):
         """App stop handler."""
         Logger.info("PythonHere: app stopped")
+
+    def on_ssh_connection_made(self):
+        """New SSH client connected handler."""
+        if not self.ssh_server_connected.is_set():
+            self.ssh_server_connected.set()
+            self.ssh_server_namespace["root"] = reset_window_environment()
 
 
 if __name__ == "__main__":

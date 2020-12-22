@@ -1,6 +1,5 @@
 import pytest
 from version_here import __version__
-from kivy.uix.settings import Settings
 
 
 def test_dev_version_is_set():
@@ -16,6 +15,7 @@ async def test_server_ready_screen_shown(app_instance):
 @pytest.mark.asyncio
 async def test_code_line_executed(capfd, app_instance, there):
     await there.runcode("print('hello there')")
+    app_instance.on_ssh_connection_made.assert_called_once()
     assert capfd.readouterr().out == "hello there\n"
 
 
@@ -48,3 +48,10 @@ async def test_settings_opened_from_action_bar(capfd, app_instance, there):
     assert app_instance.root.ids.screen_manager.current != "settings"
     await there.runcode("root.ids.open_settings_action.dispatch('on_release')")
     assert app_instance.root.ids.screen_manager.current == "settings"
+
+
+@pytest.mark.asyncio
+async def test_reset_window_environment_called(mocker, app_instance):
+    reset_window_environment = mocker.patch("main.reset_window_environment")
+    app_instance._on_ssh_connection_made()
+    reset_window_environment.assert_called_once()
