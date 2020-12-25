@@ -6,6 +6,7 @@ from kivy.app import App
 from kivy.logger import Logger
 
 from enum_here import ScreenName
+from exception_manager_here import install_exception_handler
 from patches_here import monkeypatch_kivy
 from server_here import run_ssh_server
 from window_here import reset_window_environment
@@ -29,6 +30,7 @@ class PythonHereApp(App):
     def build(self):
         """Initialize application UI."""
         super().build()
+        install_exception_handler()
 
         self.settings = self.root.ids.settings
 
@@ -64,6 +66,9 @@ class PythonHereApp(App):
 
         if self.server_task:
             self.server_task.cancel()
+
+        if self.get_running_app():
+            self.stop()
 
     def update_server_config_status(self):
         """Check and update value of the `ssh_server_config_ready`."""

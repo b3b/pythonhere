@@ -1,0 +1,21 @@
+<-UnhandledExceptionPopupHere>:
+    title: "Unhandled Exception catched"
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 20
+        Label:
+            size_hint_y: None
+            font_size: '18sp'
+            height: '24sp'
+            text: 'Exception details: '
+        CodeInput:
+            id: catched_exception_code_input_here
+            size_hint: 1, 1
+            text: root.message
+            size_hint: 1, 1
+        Button:
+            size_hint_y: None
+            height: '40sp'
+            text: 'OK, continue'
+            on_press: root.dismiss()
