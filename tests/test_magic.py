@@ -12,7 +12,7 @@ async def test_kv_command_runcode_called(call_there_group, mocker):
 
     runcode.assert_called_once()
     ctx_obj = runcode.call_args[0][0]
-    assert "load_kv_string(r'''Label: '''" in ctx_obj.code
+    assert "load_kv_string(r'''# %%there ... \nLabel: '''" in ctx_obj.code
 
 
 @pytest.mark.asyncio
