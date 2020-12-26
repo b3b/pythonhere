@@ -19,5 +19,5 @@ def kv(code: str, clear_style: bool) -> str:
 
     :param code: KV language rules
     """
-    code = code.replace("'''", '"""')
+    code = "# %%there ... \n" + code.replace("'''", '"""')
     return KV_COMMAND_TEMPLATE.format(code=code, clear_style=clear_style)
