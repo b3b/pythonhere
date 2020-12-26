@@ -1,4 +1,7 @@
 import asyncio
+import os
+import sys
+from pathlib import Path
 
 import nest_asyncio
 import pytest
@@ -30,7 +33,7 @@ def app_config():
 @pytest.fixture
 async def app_instance(mocker, capfd, app_config):
     app = PythonHereApp()
-    app._on_ssh_connection_made =  app.on_ssh_connection_made
+    app._on_ssh_connection_made = app.on_ssh_connection_made
     app.on_ssh_connection_made = mocker.Mock()
 
     app_task = asyncio.ensure_future(app.async_run_app())
@@ -69,3 +72,14 @@ async def call_there_group(nested_event_loop, app_instance, there):
         )
 
     return _callable
+
+
+@pytest.fixture
+def preserve_cwd():
+    original_cwd = Path.cwd()
+    original_path = sys.path[:]
+
+    yield original_cwd
+
+    sys.path = original_path[:]
+    os.chdir(original_cwd)

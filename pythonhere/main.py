@@ -1,5 +1,8 @@
 """PythonHere app."""
 import asyncio
+import os
+from pathlib import Path
+import sys
 from typing import Any, Dict
 
 from kivy.app import App
@@ -26,6 +29,14 @@ class PythonHereApp(App):
         self.ssh_server_connected = asyncio.Event()
         self.ssh_server_namespace = {}
         self.icon = "data/logo/logo-32.png"
+
+    @property
+    def upload_dir(self) -> str:
+        """Path to the directory to use for uploaded data."""
+        root_dir = Path(self.user_data_dir or ".").resolve()
+        upload_dir = Path(root_dir) / "upload"
+        upload_dir.mkdir(exist_ok=True)
+        return str(upload_dir)
 
     def build(self):
         """Initialize application UI."""
@@ -98,6 +109,13 @@ class PythonHereApp(App):
             self.ssh_server_connected.set()
             Logger.info("PythonHere: reset window environment")
             self.ssh_server_namespace["root"] = reset_window_environment()
+            self.chdir(self.upload_dir)
+
+    def chdir(self, path: str):
+        """Changes the working directory."""
+        Logger.info("PythonHere: change working directory to %s", path)
+        os.chdir(path)
+        sys.path.insert(0, path)
 
 
 if __name__ == "__main__":

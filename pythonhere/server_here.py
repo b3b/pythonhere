@@ -1,5 +1,6 @@
 """SSH server."""
 import asyncio
+from pathlib import Path
 
 from kivy.app import App
 from kivy.logger import Logger
@@ -25,8 +26,8 @@ async def run_ssh_server(app):
 
     config = ServerConfig(
         host="",
-        chroot=app.user_data_dir or "",
-        key_path="./key.rsa",
+        chroot=app.upload_dir,
+        key_path=Path("./key.rsa").resolve(),
         **app.get_pythonhere_config(),
     )
 

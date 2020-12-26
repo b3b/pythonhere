@@ -1,5 +1,10 @@
+from pathlib import Path
+
 import pytest
+
+from main import PythonHereApp
 from version_here import __version__
+
 
 
 def test_dev_version_is_set():
@@ -52,6 +57,24 @@ async def test_settings_opened_from_action_bar(capfd, app_instance, there):
 
 @pytest.mark.asyncio
 async def test_reset_window_environment_called(mocker, app_instance):
+    app_instance.chdir = mocker.Mock()
     reset_window_environment = mocker.patch("main.reset_window_environment")
     app_instance._on_ssh_connection_made()
     reset_window_environment.assert_called_once()
+
+
+def test_app_upload_dir_created(tmpdir):
+    app = PythonHereApp()
+    app.root_dir = tmpdir
+
+    path = app.upload_dir
+
+    assert path and Path(path).exists()
+    assert app.upload_dir == path
+
+
+def test_app_chdir_directory_changed(tmpdir, preserve_cwd):
+    assert Path.cwd() != tmpdir
+    app = PythonHereApp()
+    app.chdir(tmpdir)
+    assert Path.cwd() == tmpdir
