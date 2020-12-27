@@ -24,7 +24,7 @@ setup(
     author_email="ash.b3b@gmail.com",
     install_requires=[
         "kivy>=2.0.0",
-        "herethere>=0.0.2,<0.1.0",
+        "herethere>=0.1.0,<0.2.0",
         "ifaddr",
         "ipython",
         "ipywidgets",

@@ -1,7 +1,4 @@
 import pytest
-from version_here import __version__
-
-from kivy.factory import Factory
 
 
 @pytest.mark.asyncio

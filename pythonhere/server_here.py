@@ -45,7 +45,7 @@ async def run_ssh_server(app):
         await server.wait_closed()
     except asyncio.CancelledError:
         Logger.info("PythonHere: SSH server task canceled")
-        server.close()
+        await server.stop()
     except Exception as exc:
         Logger.errror("PythonHere: SSH server stop by exception")
         Logger.exception(exc)

@@ -17,6 +17,7 @@ async def test_kv_command_runcode_called(call_there_group, mocker):
 
 @pytest.mark.asyncio
 async def test_kv_command_executed(capfd, app_instance, call_there_group):
+    capfd.readouterr()
     assert not getattr(app_instance.root, "text", "")
     call_there_group(["kv"], "Label:\n    text: '''Hello there'''")
     captured = capfd.readouterr()
