@@ -1,6 +1,7 @@
 """App exceptions manager."""
 import asyncio
 import traceback
+from typing import Optional
 
 from kivy.base import (
     ExceptionHandler,
@@ -44,21 +45,12 @@ def load_exception_popup_style():
 class ErrorMessageOnException(ExceptionHandler):
     """Handler that catches App exceptions, and show error message with details."""
 
-    def handle_exception(self, exception):
+    def handle_exception(self, exception) -> int:
         """Handle a exception."""
+        Logger.exception("Unhandled Exception catched")
         if isinstance(exception, (asyncio.CancelledError, KeyboardInterrupt)):
             return ExceptionManager.RAISE
-
-        load_exception_popup_style()
-        Logger.exception("Unhandled Exception catched")
-        message = UnhandledExceptionPopupHere(message=traceback.format_exc())
-
-        message.open()
-
-        def reset_cursor(_):
-            message.ids.catched_exception_code_input_here.cursor = (0, 0)
-
-        Clock.schedule_once(reset_cursor)
+        show_exception_popup()
         return ExceptionManager.PASS
 
 
@@ -71,3 +63,21 @@ class UnhandledExceptionPopupHere(Popup):
 def install_exception_handler():
     """Install `ErrorMessageOnException` exception handler."""
     ExceptionManager.add_handler(ErrorMessageOnException())
+
+
+def show_exception_popup(exc: Optional[Exception] = None):
+    """Show exception popup."""
+    load_exception_popup_style()
+    if exc:
+        message = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+    else:
+        message = traceback.format_exc()
+
+    popup = UnhandledExceptionPopupHere(message=message)
+
+    popup.open()
+
+    def reset_cursor(_):
+        popup.ids.catched_exception_code_input_here.cursor = (0, 0)
+
+    Clock.schedule_once(reset_cursor)

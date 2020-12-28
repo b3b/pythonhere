@@ -6,6 +6,8 @@ from kivy.app import App
 from kivy.logger import Logger
 from herethere.here.server import SSHServerHere, ServerConfig, start_server
 
+from exception_manager_here import show_exception_popup
+
 
 class PythonHereServer(SSHServerHere):
     """SSH server protocol handler."""
@@ -39,7 +41,8 @@ async def run_ssh_server(app):
     except Exception as exc:
         Logger.error("PythonHere: SSH server start error")
         Logger.exception(exc)
-        raise
+        show_exception_popup(exc)
+        return
 
     try:
         await server.wait_closed()
@@ -49,5 +52,5 @@ async def run_ssh_server(app):
     except Exception as exc:
         Logger.errror("PythonHere: SSH server stop by exception")
         Logger.exception(exc)
-        raise
+        show_exception_popup(exc)
     Logger.info("PythonHere: SSH server closed")
