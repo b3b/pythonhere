@@ -2,10 +2,13 @@
 
 from kivy.factory import Factory
 from kivy.lang.builder import BuilderBase
+import kivy.uix.widget
 
 
 _original_factory_register = Factory.register
 _original_builderbase_match = BuilderBase.match
+# pylint: disable=protected-access
+_original_widget_destructor = kivy.uix.widget._widget_destructor
 
 
 def _patched_factory_register(classname, *args, **kwargs):
@@ -30,7 +33,19 @@ def _patched_builderbase_match(self, widget):
     return rules
 
 
+def _patched_widget_destructor(*args, **kwargs):
+    """Internal method called when a widget is deleted from memory.
+    Call the original method, and ignore KeyError
+    when uid is not found in `_widget_destructors`.
+    """
+    try:
+        return _original_widget_destructor(*args, **kwargs)
+    except KeyError:
+        pass
+
+
 def monkeypatch_kivy():
     """Apply patches to Kivy classes."""
     Factory.register = _patched_factory_register  # pylint: disable=assigning-non-slot
     BuilderBase.match = _patched_builderbase_match
+    kivy.uix.widget._widget_destructor = _patched_widget_destructor
