@@ -1,4 +1,6 @@
 """Utilities for working with Kivy window."""
+from base64 import b64encode
+import os
 import time
 
 from kivy.app import App
@@ -43,3 +45,12 @@ def load_kv_string(code: str, clear_style: bool):
         Window.add_widget(root)
         app.root = root
         app.update_ssh_server_namespace({"root": root})
+
+
+def encoded_screenshot() -> str:
+    """Return base64 encoded displayed image."""
+    path = Window.screenshot("screenshot_here.png")
+    with open(path, "rb") as png_file:
+        data = b64encode(png_file.read()).decode()
+    os.remove(path)
+    return data
