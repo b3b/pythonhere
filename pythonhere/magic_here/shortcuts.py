@@ -2,9 +2,10 @@
 # pylint: disable=invalid-name
 
 from base64 import b64decode
-from io import StringIO
+from io import BytesIO, StringIO
 
-from IPython.display import Image, display
+from PIL import Image as PILImage
+from IPython.display import display
 import click
 from herethere.there.commands import there_group, there_code_shortcut
 
@@ -65,4 +66,9 @@ def screenshot(ctx, width, output):
         output.write(data)
         output.close()
 
-    display(Image(data=data, width=width))
+    img = PILImage.open(BytesIO(data)).convert("RGB")
+    if width:
+        height = int(width * img.size[1] // img.size[0])
+        img = img.resize((width, height), PILImage.ANTIALIAS)
+
+    display(img)

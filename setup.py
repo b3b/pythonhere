@@ -29,6 +29,7 @@ setup(
         "ipython",
         "ipywidgets",
         "nest_asyncio",
+        "Pillow",
     ],
     extras_require={
         "dev": [

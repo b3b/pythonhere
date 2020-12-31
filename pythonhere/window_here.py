@@ -1,6 +1,7 @@
 """Utilities for working with Kivy window."""
 from base64 import b64encode
 import os
+from pathlib import Path
 import time
 
 from kivy.app import App
@@ -49,7 +50,8 @@ def load_kv_string(code: str, clear_style: bool):
 
 def encoded_screenshot() -> str:
     """Return base64 encoded displayed image."""
-    path = Window.screenshot("screenshot_here.png")
+    path = str(Path(f"screenshot_{time.time()}.png").resolve())
+    Window.children[0].export_to_png(path)
     with open(path, "rb") as png_file:
         data = b64encode(png_file.read()).decode()
     os.remove(path)
