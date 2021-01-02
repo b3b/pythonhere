@@ -3,6 +3,7 @@ import os
 import sys
 from pathlib import Path
 
+from asyncssh import PermissionDenied
 import nest_asyncio
 import pytest
 from kivy.config import Config
@@ -53,6 +54,16 @@ async def there(app_instance, connection_config):
     client = Client()
     await asyncio.wait_for(app_instance.ssh_server_started.wait(), 5)
     await client.connect(connection_config)
+    yield client
+
+
+@pytest.fixture
+async def there_with_wrong_password(app_instance, connection_config):
+    client = Client()
+    connection_config.password = "nowhere"
+    await asyncio.wait_for(app_instance.ssh_server_started.wait(), 5)
+    with pytest.raises(PermissionDenied):
+        await client.connect(connection_config)
     yield client
 
 

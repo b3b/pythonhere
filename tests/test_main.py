@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from asyncssh import PermissionDenied
 import pytest
 
 from main import PythonHereApp
@@ -22,6 +23,15 @@ async def test_code_line_executed(capfd, app_instance, there):
     await there.runcode("print('hello there')")
     app_instance.on_ssh_connection_made.assert_called_once()
     assert capfd.readouterr().out == "hello there\n"
+
+
+@pytest.mark.asyncio
+async def test_connect_with_wrong_password(capfd, app_instance,
+                                           there_with_wrong_password):
+    with pytest.raises(PermissionDenied):
+        await there_with_wrong_password.runcode("print('hello there')")
+    app_instance.on_ssh_connection_made.assert_not_called()
+    assert not capfd.readouterr().out
 
 
 @pytest.mark.asyncio

@@ -12,9 +12,9 @@ from exception_manager_here import show_exception_popup
 class PythonHereServer(SSHServerHere):
     """SSH server protocol handler."""
 
-    def connection_made(self, *args, **kwargs):
-        """Called when a channel is opened successfully."""
-        super().connection_made(*args, **kwargs)
+    def auth_completed(self):
+        """Authentication was completed successfully."""
+        super().auth_completed()
         App.get_running_app().on_ssh_connection_made()
 
 
