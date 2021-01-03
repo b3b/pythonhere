@@ -51,7 +51,7 @@ setup(
     url="https://github.com/b3b/ipython-pythonhere",
     # https://pypi.org/classifiers/
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],

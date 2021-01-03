@@ -27,10 +27,7 @@ sys.stderr.write(encoded_screenshot())
     "-c", "--clear-style", is_flag=True, help="Unload previously applied rules"
 )
 def kv(code: str, clear_style: bool) -> str:
-    """Insert given rules into the Kivy Language Builder.
-
-    :param code: KV language rules
-    """
+    """Insert given rules into the Kivy Language Builder."""
     code = "# %%there ... \n" + code.replace("'''", '"""')
     return KV_COMMAND_TEMPLATE.format(code=code, clear_style=clear_style)
 
