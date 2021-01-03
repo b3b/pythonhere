@@ -22,16 +22,34 @@ PythonHere
     :alt: Code coverage Status
 .. end-badges
 
-Here` is the `Kivy <https://kivy.org>`_ based app to run Python code from the `Jupyter <https://jupyter.org/>`_ magic %there.
+*Here* is the `Kivy <https://kivy.org>`_ based app to run Python code from the `Jupyter <https://jupyter.org/>`_ magic %there.
 
 - *Here* is a server part with the GUI interface. It could be Android, Raspberry Pi, some other remote device that being debugged.
 - And *%there* is a client - Jupyter magic command to run code interactively on remote device.
 
 
+.. |jupyter| image:: https://raw.githubusercontent.com/b3b/pythonhere/develop/docs/left_jupyter.png
+   :align: middle
+   :height: 400
+.. |android| image:: https://raw.githubusercontent.com/b3b/pythonhere/develop/docs/right_android.png
+   :align: middle
+   :height: 400
+
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Jupyter on PC
+     - Android app
+   * - |jupyter|
+     - |android|
+
+
+
 Install on Android
 ------------------
 
-Ready-to-use `PythonHere` APKs are available in the `Releases <https://github.com/b3b/pythonhere/releases>`_ section.
+Ready-to-use *PythonHere* APKs are available in the `Releases <https://github.com/b3b/pythonhere/releases>`_ section.
 
 For a list of installed Python packages, see: `buildozer.spec <./buildozer.spec>`_.
 
@@ -39,7 +57,7 @@ For a list of installed Python packages, see: `buildozer.spec <./buildozer.spec>
 Quick Start with Docker
 -----------------------
 
-Docker image is based on `Jupyter Docker Stacks <https://jupyter-docker-stacks.readthedocs.io/en/latest/>`_, and includes installed `PythonHere` with usage examples.
+Docker image is based on `Jupyter Docker Stacks <https://jupyter-docker-stacks.readthedocs.io/en/latest/>`_, and includes installed *PythonHere* with usage examples.
 
 Example command to start the Docker container::
 
@@ -56,12 +74,31 @@ Files from the directory **work** inside container, will be available in the hos
 
 
 Run with Docker Compose
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
-Commands to run with Docker Compose::
+Commands to run with Docker Compose, in the source directory:::
 
   cp docker-compose.yml.tmpl docker-compose.yml
   docker-compose up
+
+
+Run locally
+-----------
+
+Commands to run locally::
+
+   pip install pythonhere
+   jupyter notebook start
+
+
+Build Android app
+-----------------
+
+To build with `Buildozer <https://github.com/kivy/buildozer>`_, run in the source directory::
+
+
+  buildozer android debug
+
 
 
 Related resources
@@ -70,4 +107,4 @@ Related resources
 * `Kivy Remote Shell <https://github.com/kivy/kivy-remote-shell>`_: Remote SSH+Python interactive shell application
 * `herethere <https://github.com/b3b/herethere>`_ : Library for interactive code execution, based on AsyncSSH
 * `AsyncSSH <https://github.com/ronf/asyncssh>`_ : Asynchronous SSH for Python
-* `Buildozer action <https://github.com/ArtemSBulgakov/buildozer-action>`_ : GitHub action that is used to build Android APK with `Buildozer <https://github.com/kivy/buildozer>`_
+* `Buildozer action <https://github.com/ArtemSBulgakov/buildozer-action>`_ : GitHub action that is used to build Android APK with Buildozer
