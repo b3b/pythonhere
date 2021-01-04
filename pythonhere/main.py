@@ -102,6 +102,10 @@ class PythonHereApp(App):
         """App stop handler."""
         Logger.info("PythonHere: app stopped")
 
+    def on_pause(self):
+        """Pause mode request handler."""
+        return True
+
     def on_ssh_connection_made(self):
         """New authenticated SSH client connected handler."""
         Logger.info("PythonHere: new SSH client connected")
