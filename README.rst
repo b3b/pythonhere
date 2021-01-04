@@ -27,6 +27,7 @@ PythonHere
 - *Here* is a server part with the GUI interface. It could be Android, Raspberry Pi, some other remote device that being debugged.
 - And *%there* is a client - Jupyter magic command to run code interactively on remote device.
 
+Project documentation: https://herethere.me
 
 .. |jupyter| image:: https://raw.githubusercontent.com/b3b/pythonhere/master/docs/left_jupyter.png
    :align: middle
@@ -43,8 +44,6 @@ PythonHere
      - Android app
    * - |jupyter|
      - |android|
-
-Project documentation: https://herethere.me
 
 
 Install on Android
