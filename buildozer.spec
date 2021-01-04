@@ -30,24 +30,35 @@ icon.filename = %(source.dir)s/data/logo/logo-128.png
 # requirements of the app
 requirements = 
              kivy==2.0.0,
-             python3, 
-             android, 
-             pyjnius,              
-             plyer, 
+             python3,
+             android,
+             pygments==2.7.3,
              # herethere dependencies
-             asyncssh,
-             nest_asyncio, 
-             python-dotenv,
+             asyncssh==2.4.2,
+             nest-asyncio==1.4.3,
+             python-dotenv==0.15.0,
              herethere,
              # asyncssh dependencies
-             cryptography
+             cryptography,
+             # additional packages
+             pyjnius==1.3.0,
+             plyer==2.0.0,
+             able_recipe,
+             Pillow,
+             numpy,
+             requests==2.24.0,
+             urllib3==1.25.9,
+             certifi==2019.6.16,
+             chardet==3.0.4,
+             idna==2.8,
+
 
 # android specific
 
-android.api = 28
+android.api = 29
 android.minapi = 22
 android.ndk = 19c
-             
+
 android.permissions =
                     WAKE_LOCK,
                     INTERNET,
