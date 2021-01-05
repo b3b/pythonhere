@@ -45,7 +45,6 @@ requirements =
              plyer==2.0.0,
              able_recipe,
              Pillow,
-             numpy,
              requests==2.24.0,
              urllib3==1.25.9,
              certifi==2019.6.16,
@@ -57,16 +56,17 @@ requirements =
 
 android.api = 29
 android.minapi = 22
-android.ndk = 19c
+android.ndk = 20b
 
 android.permissions =
                     WAKE_LOCK,
+                    ACCESS_NETWORK_STATE,
+                    ACCESS_WIFI_STATE,
+                    CHANGE_WIFI_STATE,
                     INTERNET,
                     CAMERA,
                     VIBRATE,
-                    SEND_SMS,
-                    CALL_PRIVILEGED,
-                    CALL_PHONE,
+                    WRITE_EXTERNAL_STORAGE,
                     ACCESS_COARSE_LOCATION,
                     ACCESS_FINE_LOCATION,
                     BLUETOOTH,
