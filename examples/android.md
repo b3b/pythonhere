@@ -20,10 +20,58 @@ Android platform features could be used with [PyJNIus](https://github.com/kivy/p
 %connect-there
 ```
 
-## Send SMS
+```python
+%%there
+from kivy.logger import Logger
+from android.permissions import Permission, check_permission, request_permission
+import plyer
+```
 
+## Show notification
 
-### Request SEND_SMS runtime permission
+```python
+%%there
+plyer.notification.notify(title='Python', message='Here')
+```
+
+## Read accelerometer value
+
+```python
+%%there
+print(plyer.accelerometer.acceleration)
+plyer.accelerometer.enable()
+```
+
+```python
+%%there --delay 1
+print("x: {}, y: {}, z: {}".format(*plyer.accelerometer.acceleration))
+```
+
+```python
+%%there
+plyer.accelerometer.disable()
+print(plyer.accelerometer.acceleration)
+```
+
+## Write to external storage
+Writing to eternal storage is a restricted action.  
+If *WRITE_EXTERNAL_STORAGE* permission was not granted to application, access to "/sdcard" will raise *PermissionError*:
+
+```python
+%%there
+def write_to_sdcard():
+    with open("/sdcard/test_python_here.txt", "w") as f:
+        f.write("Python everywhere!")
+        
+write_to_sdcard()
+```
+
+```python
+%%there shell
+touch /sdcard/test_python_here
+```
+
+### Request runtime permission
 
 ```python
 %there -bl 1 log
@@ -31,8 +79,6 @@ Android platform features could be used with [PyJNIus](https://github.com/kivy/p
 
 ```python
 %%there
-from kivy.logger import Logger
-from android.permissions import Permission, check_permission, request_permission
 
 def permissions_callback(permissions, grant_results):
     if permissions and all(grant_results):
@@ -40,17 +86,29 @@ def permissions_callback(permissions, grant_results):
     else:
         Logger.error("Runtime permissions: not granted")
 
-permission = Permission.SEND_SMS
+permission = Permission.WRITE_EXTERNAL_STORAGE
 if check_permission(permission):
     print(f"{permission} is already granted")
 else:
     request_permission(permission, callback=permissions_callback)
 ```
 
-### Send message with Plyer
+The system permission prompt should appear at this point.
+
+
+### Use external storage
+
+
+After WRITE_EXTERNAL_STORAGE permission was granted:
 
 ```python
 %%there
-import plyer
-plyer.sms.send(recipient=" ", message="Hey!")
+write_to_sdcard()
+```
+
+```python
+%%there shell
+touch /sdcard/test_python_here.txt
+cat /sdcard/test_python_here.txt
+rm /sdcard/test_python_here.txt
 ```
