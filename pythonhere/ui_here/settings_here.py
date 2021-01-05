@@ -1,5 +1,6 @@
 """Settings panel widgets."""
 from typing import Any, Dict
+import webbrowser
 
 from kivy.app import App
 from kivy.config import Config
@@ -48,6 +49,17 @@ SETTINGS_HERE = """
 ]
 """
 
+SETTINGS_PRIVACY = """[
+    {
+        "type": "title",
+        "title": "PythonHere is intended for use as-is with no warranty of any kind."
+    },
+    {
+        "type": "show_policy_button"
+    }
+]
+"""
+
 
 class PasswordLabel(Label):
     """Label wit a hidden text."""
@@ -89,6 +101,14 @@ class StartServerSettingButton(SettingButton):
         app.root.switch_screen(ScreenName.here)
 
 
+class ShowPolicySettingButton(SettingButton):
+    """Button to show privacy policy."""
+
+    def on_release(self):
+        """Show the policy."""
+        webbrowser.open("https://herethere.me/privacy_policy.html")
+
+
 class SettingsHere(Settings):
     """Customized settings panel."""
 
@@ -99,12 +119,14 @@ class SettingsHere(Settings):
         self.interface.menu.remove_widget(self.interface.menu.ids.button)
         self.register_type("password", SettingPassword)
         self.register_type("start_server_button", StartServerSettingButton)
+        self.register_type("show_policy_button", ShowPolicySettingButton)
 
         Config.setdefaults(
             "pythonhere", {"username": "here", "password": "", "port": 8022}
         )
         self.add_json_panel("PythonHere", Config, data=SETTINGS_HERE)
         self.add_kivy_panel()
+        self.add_json_panel("Privacy Policy", Config, data=SETTINGS_PRIVACY)
 
     def get_pythonhere_config(self) -> Dict[str, Any]:
         """Extract server parts of the config."""
