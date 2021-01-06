@@ -59,13 +59,13 @@ def screenshot(ctx, width, output):
     ctx.obj.runcode()
     data = b64decode(err.getvalue())
 
-    if output:
-        output.write(data)
-        output.close()
-
     img = PILImage.open(BytesIO(data)).convert("RGB")
     if width:
         height = int(width * img.size[1] // img.size[0])
         img = img.resize((width, height), PILImage.ANTIALIAS)
+
+    if output:
+        img.save(output)
+        output.close()
 
     display(img)
