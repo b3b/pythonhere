@@ -22,9 +22,14 @@ Android platform features could be used with [PyJNIus](https://github.com/kivy/p
 
 ```python
 %%there
+from pathlib import Path
 from kivy.logger import Logger
 from android.permissions import Permission, check_permission, request_permission
 import plyer
+```
+
+```python
+%there -b log
 ```
 
 ## Show notification
@@ -74,23 +79,23 @@ touch /sdcard/test_python_here
 ### Request runtime permission
 
 ```python
-%there -bl 1 log
+%%there
+def permissions_callback(permissions, grant_results):
+    if permissions and all(grant_results):
+        Logger.info("Runtime permissions: granted %s", permissions)
+    else:
+        Logger.error("Runtime permissions: not granted, %s", permissions)
+
+def ask_permission(permission):
+    if check_permission(permission):
+        print(f"{permission} is already granted")
+    else:
+        request_permission(permission, callback=permissions_callback)
 ```
 
 ```python
 %%there
-
-def permissions_callback(permissions, grant_results):
-    if permissions and all(grant_results):
-        Logger.info("Runtime permissions: granted")
-    else:
-        Logger.error("Runtime permissions: not granted")
-
-permission = Permission.WRITE_EXTERNAL_STORAGE
-if check_permission(permission):
-    print(f"{permission} is already granted")
-else:
-    request_permission(permission, callback=permissions_callback)
+ask_permission(Permission.WRITE_EXTERNAL_STORAGE)
 ```
 
 The system permission prompt should appear at this point.
@@ -111,4 +116,30 @@ write_to_sdcard()
 touch /sdcard/test_python_here.txt
 cat /sdcard/test_python_here.txt
 rm /sdcard/test_python_here.txt
+```
+
+## Take picture with a camera
+Camera could be displayed and captured with the Kivy [Camera](https://kivy.org/doc/stable/api-kivy.uix.camera.html) widget.
+
+```python
+%%there
+ask_permission(Permission.CAMERA)
+```
+
+```python
+%%there kv
+Camera:
+    play: True
+```
+
+```python
+%%there
+root.export_to_png(filename=str(Path("camera.png").resolve()))
+root.play = False
+```
+
+```python
+%%there  shell
+file camera.png
+rm camera.png
 ```

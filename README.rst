@@ -27,23 +27,12 @@ PythonHere
 - *Here* is a server part with the GUI interface. It could be Android, Raspberry Pi, some other remote device that being debugged.
 - And *%there* is a client - Jupyter magic command to run code interactively on remote device.
 
+This app could serve as a Python Kivy playground, for dynamic code execution from the PC.
+
 Project documentation: https://herethere.me
 
-.. |jupyter| image:: https://raw.githubusercontent.com/b3b/pythonhere/master/docs/left_jupyter.png
-   :align: middle
-   :height: 400
-.. |android| image:: https://raw.githubusercontent.com/b3b/pythonhere/master/docs/right_android.png
-   :align: middle
-   :height: 400
-
-.. list-table::
-   :widths: 50 50
-   :header-rows: 1
-
-   * - Jupyter on PC
-     - Android app
-   * - |jupyter|
-     - |android|
+.. image:: https://raw.githubusercontent.com/b3b/pythonhere/master/docs/description.png
+  :alt: Project description
 
 
 Install on Android
@@ -104,7 +93,7 @@ To build with `Buildozer <https://github.com/kivy/buildozer>`_, run in the sourc
 Related resources
 -----------------
 
-* `Kivy Remote Shell <https://github.com/kivy/kivy-remote-shell>`_: Remote SSH+Python interactive shell application
+* `Kivy Remote Shell <https://github.com/kivy/kivy-remote-shell>`_ : Remote SSH+Python interactive shell application
 * `herethere <https://github.com/b3b/herethere>`_ : Library for interactive code execution, based on AsyncSSH
 * `AsyncSSH <https://github.com/ronf/asyncssh>`_ : Asynchronous SSH for Python
 * `Buildozer action <https://github.com/ArtemSBulgakov/buildozer-action>`_ : GitHub action that is used to build Android APK with Buildozer

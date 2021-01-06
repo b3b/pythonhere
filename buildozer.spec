@@ -58,6 +58,9 @@ android.api = 29
 android.minapi = 22
 android.ndk = 20b
 
+# (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
+android.arch = armeabi-v7a
+
 android.permissions =
                     WAKE_LOCK,
                     ACCESS_NETWORK_STATE,
