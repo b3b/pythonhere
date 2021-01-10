@@ -38,6 +38,8 @@ Project documentation: https://herethere.me
 Install on Android
 ------------------
 
+App is available on `Google Play <https://play.google.com/store/apps/details?id=me.herethere.pythonhere>`_.
+
 Ready-to-use *PythonHere* APKs are available in the `Releases <https://github.com/b3b/pythonhere/releases>`_ section.
 
 For a list of installed Python packages, see: `buildozer.spec <./buildozer.spec>`_.
