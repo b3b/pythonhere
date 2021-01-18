@@ -1,10 +1,10 @@
 [app]
 
 # title of the application
-title = PythonHere
+title = PythonHereDev
 
 # package name
-package.name = pythonhere
+package.name = pythonhere_dev
 
 # package domain (mostly used for android/ios package)
 package.domain = me.herethere
