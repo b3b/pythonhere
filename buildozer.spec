@@ -12,7 +12,7 @@ package.domain = me.herethere
 # indicate where the source code is living
 source.dir = pythonhere
 source.include_exts = py,png,kv,rst,rsa,ttf,atlas
-#p4a.local_recipes = ../
+p4a.local_recipes = ./recipes
 
 # search the version information into the source code
 version.regex = __version__ = "(.*)"
@@ -44,6 +44,8 @@ requirements =
              pyjnius==1.3.0,
              plyer==2.0.0,
              able_recipe,
+             https://github.com/b3b/midistream/archive/master.zip,
+             mididriver,
              Pillow,
              requests==2.24.0,
              urllib3==1.25.9,
