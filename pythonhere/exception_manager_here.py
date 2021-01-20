@@ -28,11 +28,12 @@ def load_exception_popup_style():
             font_size: '18sp'
             height: '24sp'
             text: 'Exception details: '
-        CodeInput:
-            id: catched_exception_code_input_here
-            size_hint: 1, 1
-            text: root.message
-            size_hint: 1, 1
+        ScrollView:
+            CodeInput:
+                id: catched_exception_code_input_here
+                text: root.message
+                size_hint: 1, None
+                height: self.minimum_height
         Button:
             size_hint_y: None
             height: '40sp'
