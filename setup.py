@@ -20,7 +20,7 @@ setup(
     description="Here is the Kivy based app to run code from the Jupyter magic %there",
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    author="Alexander Shlemin",
+    author="b3b",
     author_email="ash.b3b@gmail.com",
     install_requires=[
         "kivy>=2.0.0",
@@ -49,6 +49,9 @@ setup(
         ]
     },
     url="https://github.com/b3b/ipython-pythonhere",
+    project_urls={
+        'Changelog': 'https://github.com/b3b/pythonhere/blob/master/CHANGELOG.rst',
+    },
     # https://pypi.org/classifiers/
     classifiers=[
         "Development Status :: 3 - Alpha",

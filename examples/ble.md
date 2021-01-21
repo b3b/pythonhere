@@ -62,15 +62,21 @@ ble = BLE()
 print(ble)
 ```
 
+## Get list of paired BLE devices
+
+```python
+%%there
+for device in ble.bonded_devices:
+    # device: https://developer.android.com/reference/android/bluetooth/BluetoothDevice
+    print(type(device), device.getName(), "address:", device.getAddress())
+```
+
 ## Connect to remote device by a hardware address
 In this example device hardware address address is known.
 
 ```python
 %%there
-if not getattr(app, "device_address", None):
-    app.device_address = "FF:FF:FF:FF:FF:FF"
-
-ble.connect_by_device_address(app.device_address)
+ble.connect_by_device_address("AA:AA:AA:AA:AA:11")
 ```
 
 ## Discover device services and characteristics
