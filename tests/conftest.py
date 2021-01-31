@@ -33,9 +33,14 @@ def app_config():
 
 @pytest.fixture
 async def app_instance(mocker, capfd, app_config):
+
+    async def nop():
+        pass
+
     app = PythonHereApp()
     app._on_ssh_connection_made = app.on_ssh_connection_made
     app.on_ssh_connection_made = mocker.Mock()
+    app.cancel_asyncio_tasks = nop
 
     app_task = asyncio.ensure_future(app.async_run_app())
     server_task = asyncio.ensure_future(run_ssh_server(app))

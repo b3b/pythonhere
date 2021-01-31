@@ -1,3 +1,4 @@
+import asyncio
 from pathlib import Path
 
 from asyncssh import PermissionDenied
@@ -88,3 +89,19 @@ def test_app_chdir_directory_changed(tmpdir, preserve_cwd):
     app = PythonHereApp()
     app.chdir(tmpdir)
     assert Path.cwd() == tmpdir
+
+
+@pytest.mark.asyncio
+async def test_cancel_all_tasks():
+
+    async def coro():
+        pass
+
+    task = asyncio.ensure_future(coro())
+    app = PythonHereApp()
+    assert not task.cancelled()
+
+    await app.cancel_asyncio_tasks()
+
+    assert task.cancelled()
+

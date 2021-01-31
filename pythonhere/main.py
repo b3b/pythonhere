@@ -81,6 +81,17 @@ class PythonHereApp(App):
         if self.get_running_app():
             self.stop()
 
+        await self.cancel_asyncio_tasks()
+
+    async def cancel_asyncio_tasks(self):
+        """Cancel all asyncio tasks."""
+        tasks = [
+            task for task in asyncio.all_tasks() if task is not asyncio.current_task()
+        ]
+        for task in tasks:
+            task.cancel()
+        await asyncio.wait(tasks, timeout=1)
+
     def update_server_config_status(self):
         """Check and update value of the `ssh_server_config_ready`."""
         if all(self.get_pythonhere_config().values()):
