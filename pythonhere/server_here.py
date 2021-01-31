@@ -33,7 +33,7 @@ async def run_ssh_server(app):
                 chroot=app.upload_dir,
                 key_path=Path("./key.rsa").resolve(),
                 **app.get_pythonhere_config(),
-            )           
+            )
             server = await start_server(
                 config,
                 namespace=app.ssh_server_namespace,

@@ -1,6 +1,6 @@
 """%here server screen."""
 from kivy.app import App
-from kivy.clock import Clock
+from kivy.clock import Clock, mainthread
 from kivy.uix.screenmanager import ScreenManager
 
 from enum_here import ServerState
@@ -13,6 +13,7 @@ class ServerScreenManager(ScreenManager):
         super().__init__(*args, **kwargs)
         self.update_event = Clock.schedule_interval(self.update, 0.5)
 
+    @mainthread
     def update(self, _=None):
         """Determines server state, and switch to appropriate screen."""
         app = App.get_running_app()

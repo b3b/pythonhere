@@ -3,12 +3,13 @@ import asyncio
 import os
 from pathlib import Path
 import sys
+import threading
 from typing import Any, Dict
 
 from kivy.app import App
 from kivy.logger import Logger
 
-from enum_here import ScreenName
+from enum_here import ScreenName, ServerState
 from exception_manager_here import install_exception_handler
 from patches_here import monkeypatch_kivy
 from server_here import run_ssh_server
@@ -51,13 +52,7 @@ class PythonHereApp(App):
                 "root": self.root,
             }
         )
-
         self.update_server_config_status()
-        self.root.switch_screen(
-            ScreenName.here
-            if self.ssh_server_config_ready.is_set()
-            else ScreenName.settings
-        )
 
     def run_app(self):
         """Run application and SSH server tasks."""
@@ -88,14 +83,23 @@ class PythonHereApp(App):
         tasks = [
             task for task in asyncio.all_tasks() if task is not asyncio.current_task()
         ]
-        for task in tasks:
-            task.cancel()
-        await asyncio.wait(tasks, timeout=1)
+        if tasks:
+            for task in tasks:
+                task.cancel()
+            await asyncio.wait(tasks, timeout=1)
 
     def update_server_config_status(self):
-        """Check and update value of the `ssh_server_config_ready`."""
-        if all(self.get_pythonhere_config().values()):
-            self.ssh_server_config_ready.set()
+        """Check and update value of the `ssh_server_config_ready`, update screen."""
+
+        def update():
+            if all(self.get_pythonhere_config().values()):
+                self.ssh_server_config_ready.set()
+            screen.update()
+
+        screen = self.root.ids.here_screen_manager
+        screen.current = ServerState.starting_server
+        self.root.switch_screen(ScreenName.here)
+        threading.Thread(name="update_server_config_status", target=update).start()
 
     def get_pythonhere_config(self):
         """Return user settings for SSH server."""

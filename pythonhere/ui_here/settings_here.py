@@ -98,7 +98,6 @@ class StartServerSettingButton(SettingButton):
         """Start the server."""
         app = App.get_running_app()
         app.update_server_config_status()
-        app.root.switch_screen(ScreenName.here)
 
 
 class ShowPolicySettingButton(SettingButton):

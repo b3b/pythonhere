@@ -5,6 +5,7 @@ Changelog
 -----
 
 * Allow to start server again if exception occur
+* Fixed UI freeze on server start
 
 0.1.4
 -----

@@ -8,15 +8,14 @@ from main import PythonHereApp
 from version_here import __version__
 
 
-
 def test_dev_version_is_set():
     assert __version__ == "0.0.0"
 
 
 @pytest.mark.asyncio
-async def test_server_ready_screen_shown(app_instance):
+async def test_starting_server_screen_shown(app_instance):
     app_instance.root.ids.here_screen_manager.update()
-    assert app_instance.root.ids.here_screen_manager.current == 'ready'
+    assert app_instance.root.ids.here_screen_manager.current == "starting_server"
 
 
 @pytest.mark.asyncio
