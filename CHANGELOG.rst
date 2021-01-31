@@ -5,7 +5,10 @@ Changelog
 -----
 
 * Allow to start server again if exception occur
-* Fixed UI freeze on server start
+* UI changes:
+
+  - Fixed UI freeze on server start
+  - Added "new settings takes effect after restart" notification
 
 0.1.4
 -----

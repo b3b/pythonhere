@@ -11,9 +11,8 @@ from kivy.properties import (  # pylint: disable=no-name-in-module
 )
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 from kivy.uix.settings import Settings, SettingString
-
-from enum_here import ScreenName
 
 
 SETTINGS_HERE = """
@@ -97,6 +96,17 @@ class StartServerSettingButton(SettingButton):
     def on_release(self):
         """Start the server."""
         app = App.get_running_app()
+        if app.ssh_server_started.is_set():
+            popup = Popup(
+                title="Server is already started",
+                content=Label(
+                    text="New settings takes effect\n after application restart."
+                ),
+                size_hint=(None, None),
+                size=("250sp", "250sp"),
+            )
+            popup.open()
+            return
         app.update_server_config_status()
 
 

@@ -17,14 +17,15 @@
         size_hint: None, None
         width: self.texture_size[0] + sp(20)
         height: sp(40)
+        halign: "center"
         text: root.title
         disabled: not root.active
         on_release: root.on_release()
 
 
-<StartServersettingbutton>:
+<StartServersettingButton>:
     title: f"{tc('▶', 3)} Start the server"
 
 
 <ShowPolicySettingButton>:
-    title: "Open privacy policy in browser"
+    title: "Open privacy\n policy in browser"
