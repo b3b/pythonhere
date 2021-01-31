@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.1.5
+-----
+
+* Allow to start server again if exception occur
+
 0.1.4
 -----
 

@@ -21,28 +21,31 @@ class PythonHereServer(SSHServerHere):
 async def run_ssh_server(app):
     """Start and run SSH server."""
     Logger.debug("PythonHere: wait for %here settings")
-    try:
-        await app.ssh_server_config_ready.wait()
-    except asyncio.CancelledError:
-        return
+    while not app.ssh_server_started.is_set():
+        try:
+            await app.ssh_server_config_ready.wait()
+        except asyncio.CancelledError:
+            return
 
-    config = ServerConfig(
-        host="",
-        chroot=app.upload_dir,
-        key_path=Path("./key.rsa").resolve(),
-        **app.get_pythonhere_config(),
-    )
-
-    try:
-        server = await start_server(
-            config, namespace=app.ssh_server_namespace, server_factory=PythonHereServer
-        )
-        app.ssh_server_started.set()
-    except Exception as exc:
-        Logger.error("PythonHere: SSH server start error")
-        Logger.exception(exc)
-        show_exception_popup(exc)
-        return
+        try:
+            config = ServerConfig(
+                host="",
+                chroot=app.upload_dir,
+                key_path=Path("./key.rsa").resolve(),
+                **app.get_pythonhere_config(),
+            )           
+            server = await start_server(
+                config,
+                namespace=app.ssh_server_namespace,
+                server_factory=PythonHereServer,
+            )
+        except Exception as exc:
+            Logger.error("PythonHere: SSH server start error")
+            Logger.exception(exc)
+            show_exception_popup(exc)
+            app.ssh_server_config_ready.clear()
+        else:
+            app.ssh_server_started.set()
 
     try:
         await server.wait_closed()
