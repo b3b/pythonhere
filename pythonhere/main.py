@@ -7,6 +7,7 @@ import threading
 from typing import Any, Dict
 
 from kivy.app import App
+from kivy.config import Config, ConfigParser
 from kivy.logger import Logger
 
 from enum_here import ScreenName, ServerState
@@ -38,6 +39,17 @@ class PythonHereApp(App):
         upload_dir = Path(root_dir) / "upload"
         upload_dir.mkdir(exist_ok=True)
         return str(upload_dir)
+
+    @property
+    def config_path(self) -> str:
+        """Path to the application config file."""
+        root_dir = Path(self.user_data_dir or ".").resolve()
+        return str(root_dir / "config.ini")
+
+    def load_config(self) -> ConfigParser:
+        """Returning the application configuration."""
+        Config.read(self.config_path)  # Override the configuration file location
+        return super().load_config()
 
     def build(self):
         """Initialize application UI."""

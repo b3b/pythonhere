@@ -4,6 +4,7 @@ Changelog
 0.1.5
 -----
 
+* Fixed config loss when updating on Android
 * Allow to start server again if exception occur
 * UI changes:
 
