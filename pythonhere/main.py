@@ -1,4 +1,10 @@
 """PythonHere app."""
+# pylint: disable=wrong-import-order,wrong-import-position
+
+from launcher_here import try_startup_script
+
+try_startup_script()  # run script entrypoint, if it was passed
+
 import asyncio
 import os
 from pathlib import Path

@@ -32,10 +32,12 @@ def app_config():
 
 
 @pytest.fixture
-async def app_instance(mocker, capfd, app_config):
+async def app_instance(mocker, capfd, app_config, tmpdir):
 
     async def nop():
         pass
+
+    mocker.patch("main.App.user_data_dir", tmpdir)
 
     app = PythonHereApp()
     app._on_ssh_connection_made = app.on_ssh_connection_made
@@ -99,3 +101,16 @@ def preserve_cwd():
 
     sys.path = original_path[:]
     os.chdir(original_cwd)
+
+
+@pytest.fixture
+def mocked_android_modules(mocker):
+    sys.modules["jnius"] = mocker.Mock()
+    sys.modules["android"] = mocker.Mock()
+
+
+@pytest.fixture
+def test_py_script(app_instance):
+    path = Path(app_instance.upload_dir) / "test.py"
+    path.touch()
+    return str(path)

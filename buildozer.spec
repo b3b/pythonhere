@@ -79,6 +79,7 @@ android.permissions =
 
 
 android.wakelock=True
+android.manifest.launch_mode = singleTask
 
 [buildozer]
 log_level = 2
