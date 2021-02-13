@@ -5,6 +5,7 @@ Changelog
 -----
 
 * Fixed config loss when updating on Android
+* Added *pin* command: create script shortcut
 * Allow to start server again if exception occur
 * UI changes:
 

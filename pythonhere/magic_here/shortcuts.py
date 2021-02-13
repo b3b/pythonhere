@@ -21,6 +21,11 @@ from window_here import encoded_screenshot
 sys.stderr.write(encoded_screenshot())
 """
 
+PIN_COMMAND_TEMPLATE = """
+from android_here import pin_shortcut
+pin_shortcut(script="{script}", label="{label}")
+"""
+
 
 @there_code_shortcut
 @click.option(
@@ -69,3 +74,13 @@ def screenshot(ctx, width, output):
         output.close()
 
     display(img)
+
+
+@there_code_shortcut
+@click.option("-l", "--label", type=str, default="", help="Label for shortcut")
+@click.argument("script", nargs=1)
+def pin(code: str, script: str, label: str) -> str:  # pylint: disable=unused-argument
+    """Create pinned shortcut to run a Python script."""
+    if not label:
+        label = script.split("/")[-1]
+    return PIN_COMMAND_TEMPLATE.format(script=script, label=label)

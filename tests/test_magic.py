@@ -38,3 +38,25 @@ async def test_screenshot_saved_to_file(tmpdir, app_instance, call_there_group):
     assert not os.path.exists(output)
     call_there_group(["screenshot", "-o", output], "")
     assert os.path.exists(output)
+
+
+@pytest.mark.asyncio
+async def test_pin_command_pin_shortcut_called(mocker, capfd, mocked_android_modules, call_there_group,
+                                               test_py_script):
+    pin_shortcut = mocker.patch("android_here.pin_shortcut")
+    call_there_group(["pin", test_py_script, "--label", "Test label"], "")
+    captured = capfd.readouterr()
+    assert not captured.out and not captured.err
+
+    pin_shortcut.assert_called_once_with(script=test_py_script, label="Test label")
+
+
+@pytest.mark.asyncio
+async def test_pin_command_default_label(mocker, capfd, mocked_android_modules, call_there_group,
+                                         test_py_script):
+    pin_shortcut = mocker.patch("android_here.pin_shortcut")
+    call_there_group(["pin", test_py_script], "")
+    captured = capfd.readouterr()
+    assert not captured.out and not captured.err
+
+    pin_shortcut.assert_called_once_with(script=test_py_script, label="test.py")
