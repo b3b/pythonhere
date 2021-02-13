@@ -16,7 +16,7 @@ def run_script(script: str):
         path = Path(script).resolve(strict=True)
     except FileNotFoundError:
         Logger.error("Script not found: %s", script)
-        return
+        raise Exception(f"Script not found: {script}") from None
 
     original_cwd = str(Path.cwd())
     original_sys_path = sys.path[:]
@@ -43,3 +43,4 @@ def try_startup_script():
             run_script(script)
     except Exception:
         Logger.exception("PythonHere: Error while starting script")
+        raise

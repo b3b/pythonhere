@@ -3,7 +3,12 @@
 
 from launcher_here import try_startup_script
 
-try_startup_script()  # run script entrypoint, if it was passed
+try:
+    try_startup_script()  # run script entrypoint, if it was passed
+except Exception as exc:
+    startup_script_exception = exc  # pylint: disable=invalid-name
+else:
+    startup_script_exception = None  # pylint: disable=invalid-name
 
 import asyncio
 import os
@@ -13,11 +18,12 @@ import threading
 from typing import Any, Dict
 
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.config import Config, ConfigParser
 from kivy.logger import Logger
 
 from enum_here import ScreenName, ServerState
-from exception_manager_here import install_exception_handler
+from exception_manager_here import install_exception_handler, show_exception_popup
 from patches_here import monkeypatch_kivy
 from server_here import run_ssh_server
 from window_here import reset_window_environment
@@ -71,6 +77,10 @@ class PythonHereApp(App):
             }
         )
         self.update_server_config_status()
+        if startup_script_exception:
+            Clock.schedule_once(
+                lambda _: show_exception_popup(startup_script_exception), 0
+            )
 
     def run_app(self):
         """Run application and SSH server tasks."""
