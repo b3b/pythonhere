@@ -284,5 +284,5 @@ for code in list(midi_instruments.keys()):
 ```
 
 ```python
-%there screenshot -w 200
+%there -d 1 screenshot -w 200
 ```

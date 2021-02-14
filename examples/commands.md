@@ -20,8 +20,8 @@ Commands are provided by the *pythonhere* extension
 %load_ext pythonhere
 ```
 
-## connect-there
-**Connect to remote interpreter via SSH.**
+## %connect-there
+**Connect to remote interpreter via SSH**
 
 Command takes single optional argument: location of connection config.<br>
 If argument is not provided, values are loaded from the **there.env** file.
@@ -62,7 +62,7 @@ THERE_PASSWORD=xxx
 Default action for *%there*, if command is not specified - execute python code.
 
 
-## there
+### there
 **Execute python code on the remote side.**<br>
 
 ```python
@@ -70,7 +70,7 @@ Default action for *%there*, if command is not specified - execute python code.
 import this
 ```
 
-## kv
+### kv
 
 ```python
 %there kv --help
@@ -96,7 +96,7 @@ Image:
         PopMatrix
 ```
 
-## shell
+### shell
 
 ```python
 %there shell --help
@@ -124,7 +124,7 @@ Listen to Android system logs in the background and show last two lines of outpu
 logcat
 ```
 
-## upload
+### upload
 
 ```python
 %there upload --help
@@ -146,7 +146,18 @@ logcat
 find
 ```
 
-## log
+
+### pin
+
+```python
+%there pin --help
+```
+
+```python
+%there pin script.py --label "My script"
+```
+
+### log
 
 ```python
 %there log --help
@@ -157,16 +168,21 @@ Since the command blocks and never ends, it is useful to run with --backgroud (-
 ```
 
 ```python
-%there -bl 1 log
+%there -b -l 1 log
+```
+
+```python
+# wait, to make sure *log* cell connection is established before next cell is executed
+import asyncio ; await asyncio.sleep(3)
 ```
 
 ```python
 %%there
 from kivy.logger import Logger
-Logger.info("Hello from the future cell")
+Logger.info(f"Hello from the main cell")
 ```
 
-## screeenshot
+### screeenshot
 
 ```python
 %there screenshot --help
@@ -178,5 +194,5 @@ Logger.info("Hello from the future cell")
 * and save image to a local file:
 
 ```python
-%there -d .5 screenshot -w 200 -o /tmp/screenshot_test.png
+%there -d 0.5 screenshot -w 200 -o /tmp/screenshot_test.png
 ```

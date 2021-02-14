@@ -118,6 +118,24 @@ cat /sdcard/test_python_here.txt
 rm /sdcard/test_python_here.txt
 ```
 
+###  Application-specific directories
+Previous example will not work on Android >= 10,
+
+because of privacy changes: https://developer.android.com/about/versions/10/privacy/changes#scoped-storage
+
+In this case, it is possible to use directories that owned by the application:
+
+```python
+%%there
+from jnius import autoclass, cast
+PythonActivity = autoclass('org.kivy.android.PythonActivity')
+Environment = autoclass('android.os.Environment')
+context = cast('android.content.Context', PythonActivity.mActivity)
+print(context.getExternalFilesDir(None).getAbsolutePath())
+print(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath())
+print(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath())
+```
+
 ## Take picture with a camera
 Camera could be displayed and captured with the Kivy [Camera](https://kivy.org/doc/stable/api-kivy.uix.camera.html) widget.
 

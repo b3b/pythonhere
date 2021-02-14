@@ -80,7 +80,7 @@ def screenshot(ctx, width, output):
 @click.option("-l", "--label", type=str, default="", help="Label for shortcut")
 @click.argument("script", nargs=1)
 def pin(code: str, script: str, label: str) -> str:  # pylint: disable=unused-argument
-    """Create pinned shortcut to run a Python script."""
+    """Create pinned shortcut to run a Python script from Android home screen."""
     if not label:
         label = script.split("/")[-1]
     return PIN_COMMAND_TEMPLATE.format(script=script, label=label)

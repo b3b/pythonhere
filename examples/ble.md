@@ -13,7 +13,7 @@ jupyter:
 ---
 
 # Android Bluetooth Low Energy functions
-BLE functions could be used with the [able](https://github.com/b3b/able) library.
+BLE functions could be used with the [able](https://herethere.me/able) library.
 
 ```python
 %load_ext pythonhere

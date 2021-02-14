@@ -78,8 +78,8 @@ Run locally
 
 Commands to run locally::
 
-   pip install pythonhere
-   jupyter notebook start
+   pip install pythonhere jupyter
+   jupyter notebook
 
 
 Build Android app
