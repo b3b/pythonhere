@@ -46,7 +46,7 @@ requirements =
              able_recipe,
              https://github.com/b3b/midistream/archive/master.zip,
              mididriver,
-             Pillow==8.0.1,
+             Pillow,  # this is recipe, not a package
              docutils==0.16,
              requests==2.24.0,
              urllib3==1.25.9,
