@@ -46,7 +46,8 @@ requirements =
              able_recipe,
              https://github.com/b3b/midistream/archive/master.zip,
              mididriver,
-             Pillow,  # this is recipe, not a package
+             # Pillow is a recipe, not a package
+             Pillow,
              docutils==0.16,
              requests==2.24.0,
              urllib3==1.25.9,
@@ -60,6 +61,8 @@ requirements =
 android.api = 29
 android.minapi = 22
 android.ndk = 20b
+
+android.accept_sdk_license = True
 
 # (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
 android.arch = armeabi-v7a
