@@ -1,0 +1,152 @@
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pythonhere"
+dynamic = ["version"]
+description = "Here is the Kivy based app to run code from the Jupyter magic %there"
+readme = { file = "README.rst", content-type = "text/x-rst" }
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    { name = "b3b", email = "ash.b3b@gmail.com" },
+]
+keywords = ["android", "ipython", "jupyter", "magic", "kivy"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "herethere>=0.1.0",
+    "ipython",
+    "ipywidgets",
+    "Pillow",
+]
+
+[dependency-groups]
+dev = [
+    { include-group = "docker" },
+    "build",
+    "codecov",
+    "docutils",
+    "ifaddr",
+    "kivy==2.3.1",
+    "nest_asyncio",
+    "pylint",
+    "pygame",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-mock",
+    "ruff",
+    "twine",
+]
+docker = [
+    "jupytext==1.7.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/b3b/ipython-pythonhere"
+Changelog = "https://github.com/b3b/pythonhere/blob/master/CHANGELOG.rst"
+
+[tool.uv]
+environments = [
+    "sys_platform == 'linux'",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.setuptools]
+packages = [
+    "pythonhere",
+    "pythonhere.magic_here",
+    "pythonhere.ui_here",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "pythonhere.version_here.__version__" }
+
+[tool.setuptools.package-data]
+pythonhere = [
+    "*.kv",
+    "data/logo/*.png",
+    "ui_here/*.kv",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "I",    # import sorting
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "TRY",  # exception handling checks
+    "PL",   # pylint-style checks supported by Ruff
+]
+ignore = [
+    "PLC0207", # keep simple last-part string splits when they are clearer
+    "PLC0415", # allow delayed Kivy/Android imports that control side effects
+    "TRY002", # keep existing broad app-facing exceptions for now
+    "TRY003", # allow direct exception messages in this small app
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "PLR0913", # parametrized tests naturally pass several fixtures/values
+    "PLR2004", # literal expected values are readable in tests
+    "PLW0603", # tests may intentionally exercise global namespace behavior
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pylint.main]
+fail-under = 10.0
+ignore = ["migrations"]
+py-version = "3.10"
+
+[tool.pylint."messages control"]
+disable = [
+  "attribute-defined-outside-init",
+  "bad-inline-option",
+  "broad-exception-caught",
+  "broad-exception-raised",
+  "deprecated-pragma",
+  "duplicate-code",
+  "file-ignored",
+  "import-outside-toplevel",
+  "import-error",
+  "inconsistent-return-statements",
+  "invalid-name",
+  "locally-disabled",
+  "logging-too-few-args",
+  "missing-function-docstring",
+  "missing-module-docstring",
+  "no-member",
+  "possibly-used-before-assignment",
+  "protected-access",
+  "raw-checker-failed",
+  "suppressed-message",
+  "too-few-public-methods",
+  "too-many-instance-attributes",
+  "unnecessary-ellipsis",
+  "unused-argument",
+  "unused-wildcard-import",
+  "use-symbolic-message-instead",
+  "useless-suppression",
+  "wildcard-import",
+  "wrong-import-order",
+]
+enable = ["c-extension-no-member"]

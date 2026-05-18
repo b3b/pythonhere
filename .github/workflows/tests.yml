@@ -3,33 +3,54 @@ name: ci
 on:
   push:
     branches:
-    - master
+      - master
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: true
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: ["3.10", "3.12", "3.14"]
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v6
+
+      - name: Install uv and set Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+
+      - name: Install system dependencies
         run: |
-          sudo apt-get install xvfb
-          python -m pip install --upgrade pip
-          pip install tox tox-gh-actions
-      - name: Test with tox
-        run: tox
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+
+      - name: Install dependencies
+        run: uv sync --managed-python --locked --group dev
+
+      - name: Run tests
+        run: uv run ./run_tests.sh
+
+      - name: Run lint
+        if: ${{ always() }}
+        run: |
+          uv run ruff check pythonhere tests
+          uv run ruff format --check pythonhere tests
+          uv run pylint pythonhere
+
+      - name: Build package
+        if: ${{ always() }}
+        run: uv run python -m build
+
+      - name: Check distribution
+        if: ${{ always() }}
+        run: uv run twine check dist/*
+
       - name: Upload coverage to Codecov
-        if: matrix.python-version == '3.8'
-        uses: codecov/codecov-action@v1
+        if: matrix.python-version == '3.10'
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./pythonhere/coverage.xml
+          files: ./pythonhere/coverage.xml
           flags: unittests
