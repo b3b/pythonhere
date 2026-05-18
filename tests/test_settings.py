@@ -1,9 +1,8 @@
 import pytest
-
 from ui_here.settings_here import (
     SettingsHere,
-    StartServerSettingButton,
     ShowPolicySettingButton,
+    StartServerSettingButton,
 )
 
 

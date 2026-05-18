@@ -1,10 +1,10 @@
 """Connection information widgets."""
+
 from kivy.clock import Clock, mainthread
 from kivy.logger import Logger
 from kivy.properties import StringProperty  # pylint: disable=no-name-in-module
-from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
-
+from kivy.uix.label import Label
 from network_here import get_all_available_ipv4_adrresses
 
 

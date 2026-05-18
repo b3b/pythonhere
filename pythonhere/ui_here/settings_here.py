@@ -1,6 +1,7 @@
 """Settings panel widgets."""
-from typing import Any, Dict
+
 import webbrowser
+from typing import Any
 
 from kivy.app import App
 from kivy.config import Config
@@ -13,7 +14,6 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.settings import Settings, SettingString
-
 
 SETTINGS_HERE = """
 [
@@ -137,7 +137,7 @@ class SettingsHere(Settings):
         self.add_kivy_panel()
         self.add_json_panel("Privacy Policy", Config, data=SETTINGS_PRIVACY)
 
-    def get_pythonhere_config(self) -> Dict[str, Any]:
+    def get_pythonhere_config(self) -> dict[str, Any]:
         """Extract server parts of the config."""
         return {
             "username": Config.get("pythonhere", "username"),

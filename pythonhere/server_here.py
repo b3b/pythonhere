@@ -1,12 +1,12 @@
 """SSH server."""
+
 import asyncio
 from pathlib import Path
 
+from exception_manager_here import show_exception_popup
+from herethere.here.server import ServerConfig, SSHServerHere, start_server
 from kivy.app import App
 from kivy.logger import Logger
-from herethere.here.server import SSHServerHere, ServerConfig, start_server
-
-from exception_manager_here import show_exception_popup
 
 
 class PythonHereServer(SSHServerHere):

@@ -3,13 +3,12 @@ from pathlib import Path
 
 import pytest
 from herethere.there.commands import ContextObject
-
 from magic_here import shortcuts  # noqa
 
 
 @pytest.mark.asyncio
 async def test_kv_command_runcode_called(call_there_group, mocker):
-    runcode = mocker.patch.object(ContextObject, 'runcode', autospec=True)
+    runcode = mocker.patch.object(ContextObject, "runcode", autospec=True)
 
     call_there_group(["kv"], "Label:")
 
@@ -41,8 +40,9 @@ async def test_screenshot_saved_to_file(tmpdir, app_instance, call_there_group):
 
 
 @pytest.mark.asyncio
-async def test_pin_command_pin_shortcut_called(mocker, capfd, mocked_android_modules, call_there_group,
-                                               test_py_script):
+async def test_pin_command_pin_shortcut_called(
+    mocker, capfd, mocked_android_modules, call_there_group, test_py_script
+):
     pin_shortcut = mocker.patch("android_here.pin_shortcut")
     call_there_group(["pin", test_py_script, "--label", "Test label"], "")
     captured = capfd.readouterr()
@@ -52,8 +52,9 @@ async def test_pin_command_pin_shortcut_called(mocker, capfd, mocked_android_mod
 
 
 @pytest.mark.asyncio
-async def test_pin_command_default_label(mocker, capfd, mocked_android_modules, call_there_group,
-                                         test_py_script):
+async def test_pin_command_default_label(
+    mocker, capfd, mocked_android_modules, call_there_group, test_py_script
+):
     pin_shortcut = mocker.patch("android_here.pin_shortcut")
     call_there_group(["pin", test_py_script], "")
     captured = capfd.readouterr()

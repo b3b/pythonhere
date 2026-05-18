@@ -1,9 +1,9 @@
 """%here server screen."""
+
+from enum_here import ServerState
 from kivy.app import App
 from kivy.clock import Clock, mainthread
 from kivy.uix.screenmanager import ScreenManager
-
-from enum_here import ServerState
 
 
 class ServerScreenManager(ScreenManager):

@@ -1,16 +1,16 @@
 """App exceptions manager."""
+
 import asyncio
 import traceback
-from typing import Optional
 
 from kivy.base import (
     ExceptionHandler,
     ExceptionManager,
 )
 from kivy.clock import Clock
-from kivy.properties import StringProperty  # pylint: disable=no-name-in-module
 from kivy.lang import Builder
 from kivy.logger import Logger
+from kivy.properties import StringProperty  # pylint: disable=no-name-in-module
 from kivy.uix.popup import Popup
 
 
@@ -66,7 +66,7 @@ def install_exception_handler():
     ExceptionManager.add_handler(ErrorMessageOnException())
 
 
-def show_exception_popup(exc: Optional[Exception] = None):
+def show_exception_popup(exc: Exception | None = None):
     """Show exception popup."""
     load_exception_popup_style()
     if exc:

@@ -1,5 +1,6 @@
 """Network addresses discovering."""
-from typing import Iterator, Tuple
+
+from collections.abc import Iterator
 
 from kivy import platform
 
@@ -14,7 +15,7 @@ else:
 
 def get_android_interface_addresses(
     interface: "NetworkInterface",
-) -> Iterator[Tuple[str, str]]:
+) -> Iterator[tuple[str, str]]:
     """Yields active IPv4 addresses for given network interface."""
     if interface.isUp():
         addresses = interface.getInetAddresses()
@@ -24,7 +25,7 @@ def get_android_interface_addresses(
                 yield interface.getDisplayName(), address.getHostAddress()
 
 
-def get_all_available_ipv4_adrresses() -> Iterator[Tuple[str, str]]:
+def get_all_available_ipv4_adrresses() -> Iterator[tuple[str, str]]:
     """Yields available interfaces with IPv4 addresses
     available for connections from there.
     """

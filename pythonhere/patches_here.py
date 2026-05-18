@@ -1,9 +1,8 @@
 """Monkey patching Kivy @('_')@."""
 
+import kivy.uix.widget
 from kivy.factory import Factory
 from kivy.lang.builder import BuilderBase
-import kivy.uix.widget
-
 
 _original_factory_register = Factory.register
 _original_builderbase_match = BuilderBase.match

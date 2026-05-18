@@ -12,18 +12,17 @@ else:
 
 import asyncio
 import os
-from pathlib import Path
 import sys
 import threading
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any
 
+from enum_here import ScreenName, ServerState
+from exception_manager_here import install_exception_handler, show_exception_popup
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.config import Config, ConfigParser
 from kivy.logger import Logger
-
-from enum_here import ScreenName, ServerState
-from exception_manager_here import install_exception_handler, show_exception_popup
 from patches_here import monkeypatch_kivy
 from server_here import run_ssh_server
 from window_here import reset_window_environment
@@ -133,7 +132,7 @@ class PythonHereApp(App):
         """Return user settings for SSH server."""
         return self.settings.get_pythonhere_config()
 
-    def update_ssh_server_namespace(self, namespace: Dict[str, Any]):
+    def update_ssh_server_namespace(self, namespace: dict[str, Any]):
         """Update SSH server namespace."""
         self.ssh_server_namespace.update(namespace)
 

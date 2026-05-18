@@ -1,4 +1,5 @@
 from base64 import b64decode
+
 from window_here import encoded_screenshot, reset_window_environment
 
 

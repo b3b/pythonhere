@@ -1,13 +1,12 @@
 """Android specific functions."""
+
 # pylint: disable=invalid-name,import-error,import-outside-toplevel
-from pathlib import Path
-from typing import Optional
 import uuid
+from pathlib import Path
 
 from android import activity as android_activity
 from jnius import autoclass, cast
 from kivy.logger import Logger
-
 
 Context = autoclass("android.content.Context")
 Icon = autoclass("android.graphics.drawable.Icon")
@@ -23,7 +22,7 @@ def get_current_intent() -> Intent:
     return PythonActivity.mActivity.getIntent()
 
 
-def get_startup_script(intent: None = None) -> Optional[str]:
+def get_startup_script(intent: None = None) -> str | None:
     """Return script entrypoint that was passed to a given, or current, intent."""
     if not intent:
         intent = get_current_intent()
@@ -62,7 +61,7 @@ def bind_run_script_on_new_intent():
 def create_shortcut_icon() -> Icon:
     """Create icon to use for a shurtcut."""
     activity = PythonActivity.mActivity
-    Drawable = autoclass("{}.R$drawable".format(activity.getPackageName()))
+    Drawable = autoclass(f"{activity.getPackageName()}.R$drawable")
     context = cast("android.content.Context", activity.getApplicationContext())
     return Icon.createWithResource(context, Drawable.icon)
 

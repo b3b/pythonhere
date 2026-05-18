@@ -1,4 +1,5 @@
 """Layouts."""
+
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.togglebutton import ToggleButton
 

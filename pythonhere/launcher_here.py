@@ -1,12 +1,12 @@
 """Utilities for launching scripts."""
+
 import os
-from pathlib import Path
 import runpy
 import sys
+from pathlib import Path
 
-
-from kivy.logger import Logger
 from kivy import platform
+from kivy.logger import Logger
 
 
 def run_script(script: str):

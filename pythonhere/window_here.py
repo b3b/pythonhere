@@ -1,8 +1,9 @@
 """Utilities for working with Kivy window."""
-from base64 import b64encode
+
 import os
-from pathlib import Path
 import time
+from base64 import b64encode
+from pathlib import Path
 
 from kivy.app import App
 from kivy.lang import Builder

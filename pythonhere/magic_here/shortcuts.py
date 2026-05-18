@@ -4,11 +4,10 @@
 from base64 import b64decode
 from io import BytesIO, StringIO
 
-from PIL import Image as PILImage
-from IPython.display import display
 import click
-from herethere.there.commands import there_group, there_code_shortcut
-
+from herethere.there.commands import there_code_shortcut, there_group
+from IPython.display import display
+from PIL import Image as PILImage
 
 KV_COMMAND_TEMPLATE = r"""
 from window_here import load_kv_string

@@ -32,8 +32,7 @@ def test_try_startup_script(mocker, mocked_android_modules):
 def test_try_startup_exception(mocker, mocked_android_modules):
     mocker.patch("launcher_here.platform", "android")
     logger_exception = mocker.patch("launcher_here.Logger.exception")
-    run_script = mocker.patch("launcher_here.run_script",
-                              side_effect=Exception("test"))
+    run_script = mocker.patch("launcher_here.run_script", side_effect=Exception("test"))
 
     with pytest.raises(Exception, match="test"):
         try_startup_script()

@@ -1,13 +1,14 @@
-from os.path import exists, join, isdir
+from os.path import exists, isdir, join
 
 import sh
-from pythonforandroid.logger import shprint, info
+from pythonforandroid.logger import info, shprint
 from pythonforandroid.recipe import NDKRecipe
 from pythonforandroid.util import current_directory
 
 
 class MididriverRecipe(NDKRecipe):
     """Download and exract Midi Driver compiled libraries."""
+
     name = "mididriver"
     generated_libraries = ["libmidi.so"]
     url = "https://github.com/b3b/mididriver/releases/download/v{version}/MidiDriver-v{version}.aar"
@@ -22,8 +23,7 @@ class MididriverRecipe(NDKRecipe):
             directory_name = self.get_build_dir(arch)
 
             if not exists(directory_name) or not isdir(directory_name):
-                extraction_filename = join(
-                    self.ctx.packages_path, self.name, filename)
+                extraction_filename = join(self.ctx.packages_path, self.name, filename)
                 try:
                     sh.unzip(extraction_filename)
                 except (sh.ErrorReturnCode_1, sh.ErrorReturnCode_2):
@@ -34,7 +34,7 @@ class MididriverRecipe(NDKRecipe):
                     pass
                 shprint(sh.mv, "jni", directory_name)
             else:
-                info("{} is already unpacked, skipping".format(self.name))
+                info(f"{self.name} is already unpacked, skipping")
 
     def build_arch(self, arch, *extra_args):
         with current_directory(self.get_build_dir(arch.arch)):

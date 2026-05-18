@@ -1,9 +1,8 @@
 import asyncio
 from pathlib import Path
 
-from asyncssh import PermissionDenied
 import pytest
-
+from asyncssh import PermissionDenied
 from main import PythonHereApp
 from version_here import __version__
 
@@ -26,8 +25,9 @@ async def test_code_line_executed(capfd, app_instance, there):
 
 
 @pytest.mark.asyncio
-async def test_connect_with_wrong_password(capfd, app_instance,
-                                           there_with_wrong_password):
+async def test_connect_with_wrong_password(
+    capfd, app_instance, there_with_wrong_password
+):
     with pytest.raises(PermissionDenied):
         await there_with_wrong_password.runcode("print('hello there')")
     app_instance.on_ssh_connection_made.assert_not_called()
@@ -53,9 +53,9 @@ async def test_button_created(capfd, app_instance, there):
 
 @pytest.mark.asyncio
 async def test_root_object_is_in_context(capfd, app_instance, there):
-    await there.runcode('print(root)')
+    await there.runcode("print(root)")
     captured = capfd.readouterr()
-    assert captured.out.startswith('<ui_here.layout_here.RootLayout object ')
+    assert captured.out.startswith("<ui_here.layout_here.RootLayout object ")
 
 
 @pytest.mark.asyncio
@@ -103,4 +103,3 @@ async def test_cancel_all_tasks():
     await app.cancel_asyncio_tasks()
 
     assert task.cancelled()
-

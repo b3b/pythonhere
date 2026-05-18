@@ -3,16 +3,14 @@ import os
 import sys
 from pathlib import Path
 
-from asyncssh import PermissionDenied
 import nest_asyncio
 import pytest
-from kivy.config import Config
-from kivy.core.window import Window
-
+from asyncssh import PermissionDenied
 from herethere.everywhere import ConnectionConfig
 from herethere.there.client import Client
 from herethere.there.commands import ContextObject, there_group
-
+from kivy.config import Config
+from kivy.core.window import Window
 from main import PythonHereApp, run_ssh_server
 
 
