@@ -1,0 +1,126 @@
+name: Build APK
+run-name: Build APK (${{ github.ref_name }})
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "apk/**"
+
+permissions:
+  contents: read
+
+env:
+  APK_FILE: pythonhere-debug.apk
+  BUILDOZER_BUILD_LOG: buildozer-build.log
+  BUILDOZER_IMAGE: kivy/buildozer@sha256:fcfb08f4f7beecfdea10e23968c16933b935a2c820e012d8415f318cd8586aab
+  RUST_TOOLCHAIN: 1.83.0
+
+jobs:
+  build-apk:
+    name: Build Android debug APK
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv and set Python
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          python-version: "3.10"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+
+      - name: Install dependencies
+        run: uv sync --managed-python --locked --group dev
+
+      - name: Run tests
+        run: uv run ./run_tests.sh
+
+      - name: Run lint
+        run: |
+          uv run ruff check pythonhere tests
+          uv run ruff format --check pythonhere tests
+          uv run pylint pythonhere
+
+      - name: Build package
+        run: uv run python -m build
+
+      - name: Check distribution
+        run: uv run twine check dist/*
+
+      - name: Build Android APK with Buildozer Docker image
+        shell: bash
+        run: |
+          set -o pipefail
+
+          docker run --rm \
+            -v "$PWD":/home/user/hostcwd \
+            -w /home/user/hostcwd \
+            -e RUST_TOOLCHAIN="$RUST_TOOLCHAIN" \
+            "$BUILDOZER_IMAGE" \
+            bash -lc '
+              set -euo pipefail
+
+              export RUSTUP_HOME="$HOME/.rustup"
+              export CARGO_HOME="$HOME/.cargo"
+              export PATH="$CARGO_HOME/bin:$PATH"
+
+              if ! command -v cargo >/dev/null; then
+                curl https://sh.rustup.rs -sSf \
+                  | sh -s -- -y --profile minimal --default-toolchain "$RUST_TOOLCHAIN"
+              fi
+
+              rustc --version
+              cargo --version
+              buildozer android debug
+            ' 2>&1 | tee "$BUILDOZER_BUILD_LOG"
+
+      - name: Prepare APK artifact
+        id: artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          safe_ref="${GITHUB_REF_NAME//\//-}"
+          short_sha="${GITHUB_SHA::7}"
+          artifact_base="pythonhere-debug-${safe_ref}-${short_sha}"
+
+          apk="$(find bin -name '*.apk' -type f | head -n 1)"
+
+          if [[ -z "$apk" ]]; then
+            echo "::error::No APK found"
+            exit 1
+          fi
+
+          sudo cp "$apk" "${APK_FILE}"
+          sudo chown "$(id -u):$(id -g)" "${APK_FILE}"
+
+          sha256sum "${APK_FILE}" > "${APK_FILE}.sha256"
+
+          echo "name=${artifact_base}" >> "$GITHUB_OUTPUT"
+          ls -lh "${APK_FILE}" "${APK_FILE}.sha256"
+          cat "${APK_FILE}.sha256"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact.outputs.name }}
+          path: |
+            ${{ env.APK_FILE }}
+            ${{ env.APK_FILE }}.sha256
+          if-no-files-found: error
+          retention-days: 8
+
+      - name: Upload Buildozer build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildozer-build-log
+          path: ${{ env.BUILDOZER_BUILD_LOG }}
+          if-no-files-found: ignore
+          retention-days: 8
