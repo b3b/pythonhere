@@ -59,11 +59,12 @@ jobs:
           set -o pipefail
 
           docker run --rm \
+            --entrypoint bash \
             -v "$PWD":/home/user/hostcwd \
             -w /home/user/hostcwd \
             -e RUST_TOOLCHAIN="$RUST_TOOLCHAIN" \
             "$BUILDOZER_IMAGE" \
-            bash -lc '
+            -lc '
               set -euo pipefail
 
               export RUSTUP_HOME="$HOME/.rustup"
