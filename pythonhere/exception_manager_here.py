@@ -2,6 +2,7 @@
 
 import asyncio
 import traceback
+from pathlib import Path
 
 from kivy.base import (
     ExceptionHandler,
@@ -16,31 +17,10 @@ from kivy.uix.popup import Popup
 
 def load_exception_popup_style():
     """Load KV rules for `UnhandledExceptionPopupHere`."""
-    Builder.load_string(
-        """<-UnhandledExceptionPopupHere>:
-    title: "Unhandled Exception catched"
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 10
-        spacing: 20
-        Label:
-            size_hint_y: None
-            font_size: '18sp'
-            height: '24sp'
-            text: 'Exception details: '
-        ScrollView:
-            CodeInput:
-                id: catched_exception_code_input_here
-                text: root.message
-                size_hint: 1, None
-                height: self.minimum_height
-        Button:
-            size_hint_y: None
-            height: '40sp'
-            text: 'OK, continue'
-            on_press: root.dismiss()
-    """
-    )
+    kv_path = str(Path(__file__).with_suffix(".kv"))
+
+    if kv_path not in Builder.files:
+        Builder.load_file(kv_path)
 
 
 class ErrorMessageOnException(ExceptionHandler):
@@ -63,7 +43,11 @@ class UnhandledExceptionPopupHere(Popup):
 
 def install_exception_handler():
     """Install `ErrorMessageOnException` exception handler."""
-    ExceptionManager.add_handler(ErrorMessageOnException())
+    if not any(
+        isinstance(handler, ErrorMessageOnException)
+        for handler in ExceptionManager.handlers
+    ):
+        ExceptionManager.add_handler(ErrorMessageOnException())
 
 
 def show_exception_popup(exc: Exception | None = None):
