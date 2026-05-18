@@ -18,7 +18,7 @@ p4a.local_recipes = ./recipes
 version.regex = __version__ = "(.*)"
 version.filename = %(source.dir)s/version_here.py
 
-orientation = all
+orientation = landscape, portrait, landscape-reverse, portrait-reverse
 fullscreen = 0
 
 # (str) Presplash of the application
@@ -28,43 +28,44 @@ presplash.filename = %(source.dir)s/data/logo/logo-splash.png
 icon.filename = %(source.dir)s/data/logo/logo-128.png
 
 # requirements of the app
-requirements = 
-             kivy==2.0.0,
-             python3,
+requirements =
+             python3==3.14.2,
+             hostpython3==3.14.2,
+             kivy==2.3.1,
              android,
-             pygments==2.7.3,
+             pygments==2.20.0,
              # herethere dependencies
-             asyncssh==2.4.2,
-             python-dotenv==0.15.0,
+             asyncssh==2.23.0,
+             python-dotenv==1.2.2,
              herethere,
              # asyncssh dependencies
-             cryptography,
+             cryptography==48.0.0,
+             typing_extensions,
              # additional packages
-             pyjnius==1.3.0,
-             plyer==2.0.0,
+             pyjnius==1.7.0,
+             plyer==2.1.0,
              able_recipe,
-             https://github.com/b3b/midistream/archive/master.zip,
-             mididriver,
+             midistream==0.3.1,
              # Pillow is a recipe, not a package
              Pillow,
-             docutils==0.16,
-             requests==2.24.0,
-             urllib3==1.25.9,
-             certifi==2019.6.16,
-             chardet==3.0.4,
-             idna==2.8,
-
+             docutils==0.22.4,
+             requests==2.34.2,
+             urllib3==2.7.0,
+             certifi==2026.4.22,
+             chardet==7.4.3,
+             idna==3.15,
+             # https://github.com/kivy/python-for-android/issues/3098
+             filetype==1.2.0,
 
 # android specific
-
-android.api = 29
+p4a.branch = v2026.05.09             
+android.api = 36
 android.minapi = 22
-android.ndk = 20b
-
+android.ndk = 28c
 android.accept_sdk_license = True
 
 # (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
-android.arch = armeabi-v7a
+android.archs = arm64-v8a, armeabi-v7a, x86_64
 
 android.permissions =
                     WAKE_LOCK,
@@ -77,9 +78,11 @@ android.permissions =
                     WRITE_EXTERNAL_STORAGE,
                     ACCESS_COARSE_LOCATION,
                     ACCESS_FINE_LOCATION,
-                    BLUETOOTH,
-                    BLUETOOTH_ADMIN
-
+                    (name=android.permission.BLUETOOTH;maxSdkVersion=30),
+                    (name=android.permission.BLUETOOTH_ADMIN;maxSdkVersion=30),
+                    BLUETOOTH_SCAN,
+                    BLUETOOTH_CONNECT,
+                    BLUETOOTH_ADVERTISE,
 
 android.wakelock=True
 android.manifest.launch_mode = singleTask
