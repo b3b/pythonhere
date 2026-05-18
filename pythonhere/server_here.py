@@ -53,7 +53,7 @@ async def run_ssh_server(app):
         Logger.info("PythonHere: SSH server task canceled")
         await server.stop()
     except Exception as exc:
-        Logger.errror("PythonHere: SSH server stop by exception")
+        Logger.error("PythonHere: SSH server stop by exception")
         Logger.exception(exc)
         show_exception_popup(exc)
     Logger.info("PythonHere: SSH server closed")

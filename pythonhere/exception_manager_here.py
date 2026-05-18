@@ -48,9 +48,9 @@ class ErrorMessageOnException(ExceptionHandler):
 
     def handle_exception(self, exception) -> int:
         """Handle a exception."""
-        Logger.exception("Unhandled Exception catched")
         if isinstance(exception, (asyncio.CancelledError, KeyboardInterrupt)):
             return ExceptionManager.RAISE
+        Logger.exception("Unhandled Exception catched")
         show_exception_popup()
         return ExceptionManager.PASS
 
