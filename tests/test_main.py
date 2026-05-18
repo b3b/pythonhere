@@ -7,6 +7,7 @@ import pytest
 from asyncssh import PermissionDenied
 from enum_here import ScreenName, ServerState
 from main import PythonHereApp
+from ui_here.server_screen_here import ServerScreenManager
 from version_here import __version__
 
 
@@ -14,10 +15,27 @@ def test_dev_version_is_set():
     assert __version__ == "0.0.0"
 
 
-@pytest.mark.asyncio
-async def test_starting_server_screen_shown(app_instance):
-    app_instance.root.ids.here_screen_manager.update()
-    assert app_instance.root.ids.here_screen_manager.current == "starting_server"
+def test_server_screen_update_states(mocker):
+    screen = SimpleNamespace(current=None)
+    app = SimpleNamespace(
+        ssh_server_config_ready=asyncio.Event(),
+        ssh_server_started=asyncio.Event(),
+    )
+    mocker.patch("ui_here.server_screen_here.App.get_running_app", return_value=app)
+    unschedule = mocker.patch("ui_here.server_screen_here.Clock.unschedule")
+
+    ServerScreenManager.update.__wrapped__(screen)
+    assert screen.current == ServerState.not_configured
+
+    app.ssh_server_config_ready.set()
+    ServerScreenManager.update.__wrapped__(screen)
+    assert screen.current == ServerState.starting_server
+
+    app.ssh_server_started.set()
+    screen.update_event = mocker.Mock()
+    ServerScreenManager.update.__wrapped__(screen)
+    assert screen.current == ServerState.ready
+    unschedule.assert_called_once_with(screen.update_event)
 
 
 @pytest.mark.asyncio
