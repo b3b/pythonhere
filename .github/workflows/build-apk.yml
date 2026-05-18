@@ -71,10 +71,11 @@ jobs:
               export CARGO_HOME="$HOME/.cargo"
               export PATH="$CARGO_HOME/bin:$PATH"
 
-              if ! command -v cargo >/dev/null; then
-                curl https://sh.rustup.rs -sSf \
-                  | sh -s -- -y --profile minimal --default-toolchain "$RUST_TOOLCHAIN"
-              fi
+              apt-get update
+              apt-get install -y curl
+
+              curl https://sh.rustup.rs -sSf \
+                | sh -s -- -y --profile minimal --default-toolchain "$RUST_TOOLCHAIN"
 
               rustc --version
               cargo --version
