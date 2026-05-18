@@ -1,8 +1,11 @@
 import asyncio
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import PropertyMock
 
 import pytest
 from asyncssh import PermissionDenied
+from enum_here import ScreenName, ServerState
 from main import PythonHereApp
 from version_here import __version__
 
@@ -91,15 +94,160 @@ def test_app_chdir_directory_changed(tmpdir, preserve_cwd):
 
 
 @pytest.mark.asyncio
-async def test_cancel_all_tasks():
+async def test_init_asyncio_state_creates_loop_owned_events():
+    app = PythonHereApp()
+
+    app.init_asyncio_state()
+    first_config_ready = app.ssh_server_config_ready
+    first_started = app.ssh_server_started
+    first_connected = app.ssh_server_connected
+
+    assert app.asyncio_loop is asyncio.get_running_loop()
+    assert isinstance(first_config_ready, asyncio.Event)
+    assert isinstance(first_started, asyncio.Event)
+    assert isinstance(first_connected, asyncio.Event)
+
+    app.init_asyncio_state()
+
+    assert app.ssh_server_config_ready is not first_config_ready
+    assert app.ssh_server_started is not first_started
+    assert app.ssh_server_connected is not first_connected
+
+
+@pytest.mark.asyncio
+async def test_cancel_app_tasks_cancels_owned_tasks_only():
+    never_run = asyncio.Event()
 
     async def coro():
-        pass
+        await never_run.wait()
 
-    task = asyncio.ensure_future(coro())
+    app_task = asyncio.create_task(coro())
+    server_task = asyncio.create_task(coro())
+    unrelated_task = asyncio.create_task(coro())
     app = PythonHereApp()
-    assert not task.cancelled()
+    app.app_task = app_task
+    app.server_task = server_task
 
-    await app.cancel_asyncio_tasks()
+    assert not app_task.cancelled()
+    assert not server_task.cancelled()
+    assert not unrelated_task.cancelled()
 
-    assert task.cancelled()
+    await app.cancel_app_tasks()
+
+    assert app_task.cancelled()
+    assert server_task.cancelled()
+    assert not unrelated_task.cancelled()
+
+    unrelated_task.cancel()
+    await asyncio.gather(unrelated_task, return_exceptions=True)
+
+
+@pytest.mark.asyncio
+async def test_on_ssh_connection_made_initializes_window_once(mocker):
+    app = PythonHereApp()
+    app.init_asyncio_state()
+    app.chdir = mocker.Mock()
+    mocker.patch.object(
+        PythonHereApp,
+        "upload_dir",
+        new_callable=PropertyMock,
+        return_value="/tmp/pythonhere-upload",
+    )
+    reset_window_environment = mocker.patch(
+        "main.reset_window_environment", return_value="new-root"
+    )
+
+    app.on_ssh_connection_made()
+    app.on_ssh_connection_made()
+
+    assert app.ssh_server_connected.is_set()
+    reset_window_environment.assert_called_once()
+    app.chdir.assert_called_once_with("/tmp/pythonhere-upload")
+    assert app.ssh_server_namespace["root"] == "new-root"
+
+
+def test_update_server_config_status_schedules_threadsafe_updates(mocker):
+    class ImmediateThread:
+        def __init__(self, name, target):
+            self.name = name
+            self.target = target
+
+        def start(self):
+            self.target()
+
+    app = PythonHereApp()
+    app.asyncio_loop = mocker.Mock()
+    app.ssh_server_config_ready = mocker.Mock()
+    app.settings = mocker.Mock()
+    app.settings.get_pythonhere_config.return_value = {
+        "username": "here",
+        "password": "there",
+        "port": 8022,
+    }
+    screen = mocker.Mock()
+    root = mocker.Mock()
+    root.ids = SimpleNamespace(here_screen_manager=screen)
+    app.root = root
+
+    schedule_once = mocker.patch("main.Clock.schedule_once")
+    mocker.patch("main.threading.Thread", ImmediateThread)
+
+    app.update_server_config_status()
+
+    assert screen.current == ServerState.starting_server
+    root.switch_screen.assert_called_once_with(ScreenName.here)
+    app.asyncio_loop.call_soon_threadsafe.assert_called_once_with(
+        app.ssh_server_config_ready.set
+    )
+    schedule_once.assert_called_once()
+
+    scheduled_callback = schedule_once.call_args[0][0]
+    scheduled_callback(None)
+    screen.update.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_run_app_cancels_server_when_app_finishes(mocker):
+    server_cancelled = asyncio.Event()
+
+    async def fake_run_ssh_server(_app):
+        try:
+            await asyncio.Event().wait()
+        except asyncio.CancelledError:
+            server_cancelled.set()
+            raise
+
+    async def fake_async_run_app():
+        return None
+
+    app = PythonHereApp()
+    app.async_run_app = fake_async_run_app
+    mocker.patch("main.run_ssh_server", fake_run_ssh_server)
+
+    await app.run_app()
+
+    assert server_cancelled.is_set()
+
+
+@pytest.mark.asyncio
+async def test_run_app_cancels_app_and_propagates_server_error(mocker):
+    app_cancelled = asyncio.Event()
+
+    async def fake_run_ssh_server(_app):
+        raise RuntimeError("server failed")
+
+    async def fake_async_run_app():
+        try:
+            await asyncio.Event().wait()
+        except asyncio.CancelledError:
+            app_cancelled.set()
+            raise
+
+    app = PythonHereApp()
+    app.async_run_app = fake_async_run_app
+    mocker.patch("main.run_ssh_server", fake_run_ssh_server)
+
+    with pytest.raises(RuntimeError, match="server failed"):
+        await app.run_app()
+
+    assert app_cancelled.is_set()

@@ -1,6 +1,7 @@
 import asyncio
 import os
 import sys
+from contextlib import suppress
 from pathlib import Path
 
 import nest_asyncio
@@ -31,16 +32,12 @@ def app_config():
 
 @pytest.fixture
 async def app_instance(mocker, capfd, app_config, tmpdir):
-
-    async def nop():
-        pass
-
     mocker.patch("main.App.user_data_dir", tmpdir)
 
     app = PythonHereApp()
+    app.init_asyncio_state()
     app._on_ssh_connection_made = app.on_ssh_connection_made
     app.on_ssh_connection_made = mocker.Mock()
-    app.cancel_asyncio_tasks = nop
 
     app_task = asyncio.ensure_future(app.async_run_app())
     server_task = asyncio.ensure_future(run_ssh_server(app))
@@ -49,7 +46,12 @@ async def app_instance(mocker, capfd, app_config, tmpdir):
 
     server_task.cancel()
     app_task.cancel()
-    await asyncio.gather(app_task, server_task)
+    results = await asyncio.gather(app_task, server_task, return_exceptions=True)
+    for result in results:
+        if isinstance(result, BaseException) and not isinstance(
+            result, asyncio.CancelledError
+        ):
+            raise result
     app.root.clear_widgets()
     Window.children.clear()
 
@@ -59,7 +61,14 @@ async def there(app_instance, connection_config):
     client = Client()
     await asyncio.wait_for(app_instance.ssh_server_started.wait(), 5)
     await client.connect(connection_config)
-    yield client
+    try:
+        yield client
+    finally:
+        connection = client.connection.connection
+        await client.disconnect()
+        if connection is not None:
+            with suppress(Exception):
+                await connection.wait_closed()
 
 
 @pytest.fixture
@@ -73,7 +82,7 @@ async def there_with_wrong_password(app_instance, connection_config):
 
 
 @pytest.fixture
-def nested_event_loop(event_loop):
+def nested_event_loop():
     nest_asyncio.apply()
 
 

@@ -1,4 +1,5 @@
 """PythonHere app."""
+
 # pylint: disable=wrong-import-order,wrong-import-position
 
 from launcher_here import try_startup_script
@@ -35,13 +36,25 @@ class PythonHereApp(App):
 
     def __init__(self):
         super().__init__()
-        self.server_task = None
+        self.server_task: asyncio.Task | None = None
+        self.app_task: asyncio.Task | None = None
+        self.asyncio_loop: asyncio.AbstractEventLoop | None = None
         self.settings = None
+
+        # Created once a running asyncio loop exists.
+        self.ssh_server_config_ready: asyncio.Event | None = None
+        self.ssh_server_started: asyncio.Event | None = None
+        self.ssh_server_connected: asyncio.Event | None = None
+
+        self.ssh_server_namespace = {}
+        self.icon = "data/logo/logo-32.png"
+
+    def init_asyncio_state(self):
+        """Initialize asyncio-owned state after the event loop is running."""
+        self.asyncio_loop = asyncio.get_running_loop()
         self.ssh_server_config_ready = asyncio.Event()
         self.ssh_server_started = asyncio.Event()
         self.ssh_server_connected = asyncio.Event()
-        self.ssh_server_namespace = {}
-        self.icon = "data/logo/logo-32.png"
 
     @property
     def upload_dir(self) -> str:
@@ -66,9 +79,7 @@ class PythonHereApp(App):
         """Initialize application UI."""
         super().build()
         install_exception_handler()
-
         self.settings = self.root.ids.settings
-
         self.ssh_server_namespace.update(
             {
                 "app": self,
@@ -81,47 +92,81 @@ class PythonHereApp(App):
                 lambda _: show_exception_popup(startup_script_exception), 0
             )
 
-    def run_app(self):
-        """Run application and SSH server tasks."""
-        self.ssh_server_started = asyncio.Event()
-        self.server_task = asyncio.ensure_future(run_ssh_server(self))
-        return asyncio.gather(self.async_run_app(), self.server_task)
+    async def run_app(self):
+        """Run application and SSH server until either main task exits."""
+        self.init_asyncio_state()
+
+        self.server_task = asyncio.create_task(run_ssh_server(self))
+        self.app_task = asyncio.create_task(self.async_run_app())
+
+        tasks = (self.server_task, self.app_task)
+
+        try:
+            done, pending = await asyncio.wait(
+                tasks,
+                return_when=asyncio.FIRST_COMPLETED,
+            )
+
+            for task in pending:
+                task.cancel()
+
+            if pending:
+                await asyncio.gather(*pending, return_exceptions=True)
+
+            for task in done:
+                if task.cancelled():
+                    continue
+                exc = task.exception()
+                if exc is not None:
+                    raise exc
+        finally:
+            await self.cancel_app_tasks()
 
     async def async_run_app(self):
         """Run app asynchronously."""
         try:
-            await self.async_run(async_lib="asyncio")
+            await self.async_run()
             Logger.info("PythonHere: async run completed")
         except asyncio.CancelledError:
             Logger.info("PythonHere: app main task canceled")
+            raise
         except Exception as exc:
             Logger.exception(exc)
+            raise
+        finally:
+            if self.get_running_app():
+                self.stop()
 
-        if self.server_task:
-            self.server_task.cancel()
-
-        if self.get_running_app():
-            self.stop()
-
-        await self.cancel_asyncio_tasks()
-
-    async def cancel_asyncio_tasks(self):
-        """Cancel all asyncio tasks."""
+    async def cancel_app_tasks(self):
+        """Cancel tasks owned by this app."""
         tasks = [
-            task for task in asyncio.all_tasks() if task is not asyncio.current_task()
+            task
+            for task in (self.server_task, self.app_task)
+            if task is not None
+            and task is not asyncio.current_task()
+            and not task.done()
         ]
+
+        for task in tasks:
+            task.cancel()
+
         if tasks:
-            for task in tasks:
-                task.cancel()
-            await asyncio.wait(tasks, timeout=1)
+            await asyncio.gather(*tasks, return_exceptions=True)
 
     def update_server_config_status(self):
         """Check and update value of the `ssh_server_config_ready`, update screen."""
 
         def update():
             if all(self.get_pythonhere_config().values()):
-                self.ssh_server_config_ready.set()
-            screen.update()
+                if (
+                    self.asyncio_loop is not None
+                    and self.ssh_server_config_ready is not None
+                ):
+                    self.asyncio_loop.call_soon_threadsafe(
+                        self.ssh_server_config_ready.set
+                    )
+
+            Clock.schedule_once(lambda _: screen.update(), 0)
 
         screen = self.root.ids.here_screen_manager
         screen.current = ServerState.starting_server
@@ -151,8 +196,14 @@ class PythonHereApp(App):
     def on_ssh_connection_made(self):
         """New authenticated SSH client connected handler."""
         Logger.info("PythonHere: new SSH client connected")
+
+        if self.ssh_server_connected is None:
+            Logger.warning("PythonHere: SSH connected before asyncio state was ready")
+            return
+
         if not self.ssh_server_connected.is_set():
             self.ssh_server_connected.set()
+
             Logger.info("PythonHere: reset window environment")
             self.ssh_server_namespace["root"] = reset_window_environment()
             self.chdir(self.upload_dir)
@@ -164,7 +215,11 @@ class PythonHereApp(App):
         sys.path.insert(0, path)
 
 
+async def main():
+    """Run PythonHere."""
+    app = PythonHereApp()
+    await app.run_app()
+
+
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(PythonHereApp().run_app())
-    loop.close()
+    asyncio.run(main())
