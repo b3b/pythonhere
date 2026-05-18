@@ -53,34 +53,30 @@ jobs:
       - name: Check distribution
         run: uv run twine check dist/*
 
+      - name: Install Rust
+        run: |
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal
+          rustup default "$RUST_TOOLCHAIN"
+          rustc --version
+          cargo --version
+
       - name: Build Android APK with Buildozer Docker image
         shell: bash
         run: |
           set -o pipefail
+          mkdir -p .buildozer bin
+          sudo chown -R 1000:1000 .buildozer bin
 
           docker run --rm \
-            --entrypoint bash \
+            -e RUSTUP_HOME=/home/user/.rustup \
+            -e CARGO_HOME=/home/user/.cargo \
+            -e PATH=/home/user/.cargo/bin:/home/user/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
             -v "$PWD":/home/user/hostcwd \
+            -v "$HOME/.rustup":/home/user/.rustup \
+            -v "$HOME/.cargo":/home/user/.cargo \
             -w /home/user/hostcwd \
-            -e RUST_TOOLCHAIN="$RUST_TOOLCHAIN" \
             "$BUILDOZER_IMAGE" \
-            -lc '
-              set -euo pipefail
-
-              export RUSTUP_HOME="$HOME/.rustup"
-              export CARGO_HOME="$HOME/.cargo"
-              export PATH="$CARGO_HOME/bin:$PATH"
-
-              apt-get update
-              apt-get install -y curl
-
-              curl https://sh.rustup.rs -sSf \
-                | sh -s -- -y --profile minimal --default-toolchain "$RUST_TOOLCHAIN"
-
-              rustc --version
-              cargo --version
-              buildozer android debug
-            ' 2>&1 | tee "$BUILDOZER_BUILD_LOG"
+            android debug 2>&1 | tee "$BUILDOZER_BUILD_LOG"
 
       - name: Prepare APK artifact
         id: artifact
