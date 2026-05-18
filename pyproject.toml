@@ -36,7 +36,7 @@ dev = [
     "docutils",
     "ifaddr",
     "kivy==2.3.1",
-    "nest_asyncio",
+    "nest-asyncio2==1.7.2",
     "pylint",
     "pygame",
     "pytest",

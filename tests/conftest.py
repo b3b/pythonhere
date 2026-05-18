@@ -4,7 +4,7 @@ import sys
 from contextlib import suppress
 from pathlib import Path
 
-import nest_asyncio
+import nest_asyncio2
 import pytest
 from asyncssh import PermissionDenied
 from herethere.everywhere import ConnectionConfig
@@ -83,7 +83,7 @@ async def there_with_wrong_password(app_instance, connection_config):
 
 @pytest.fixture
 def nested_event_loop():
-    nest_asyncio.apply()
+    nest_asyncio2.apply()
 
 
 @pytest.fixture

@@ -35,7 +35,6 @@ requirements =
              pygments==2.7.3,
              # herethere dependencies
              asyncssh==2.4.2,
-             nest-asyncio==1.4.3,
              python-dotenv==0.15.0,
              herethere,
              # asyncssh dependencies
