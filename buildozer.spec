@@ -39,7 +39,7 @@ requirements =
              python-dotenv==1.2.2,
              herethere,
              # asyncssh dependencies
-             cryptography==48.0.0,
+             cryptography,
              typing_extensions,
              # additional packages
              pyjnius==1.7.0,
