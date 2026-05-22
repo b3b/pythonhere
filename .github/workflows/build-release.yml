@@ -1,77 +1,187 @@
 on:
   push:
     tags:
-      - '*'
+      - "[0-9]*.[0-9]*.[0-9]*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+env:
+  BUILDOZER_BUILD_LOG: buildozer-build.log
+  BUILDOZER_IMAGE: kivy/buildozer@sha256:fcfb08f4f7beecfdea10e23968c16933b935a2c820e012d8415f318cd8586aab
+  RUST_TOOLCHAIN: 1.83.0
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: "actions/checkout@v2"
-
-      - name: Get the version
-        id: version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+      - uses: "actions/checkout@v6"
 
       - name: Update version from tag
-        env:
-          VERSION: ${{ steps.version.outputs.VERSION }}
         run: |
+          VERSION="${GITHUB_REF_NAME}"
           echo "Version is: ${VERSION}"
-          test -n "${VERSION}"
+          [[ "${VERSION}" =~ ^[0-9]+[.][0-9]+[.][0-9]+$ ]]
           echo "__version__ = \"${VERSION}\"" > pythonhere/version_here.py
 
       - name: Set up Python
-        uses: "actions/setup-python@v2"
+        uses: "actions/setup-python@v6"
         with:
-          python-version: "3.8"
+          python-version: "3.10"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install wheel twine
+          pip install build twine
       - name: Build package
-        run: python setup.py sdist bdist_wheel
+        run: python -m build --sdist --wheel
       - name: List result
         run: ls -l dist
       - name: Check distribution
         run: python -m twine check dist/*
 
-      - name: Build Android APK with Buildozer
-        id: buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
+      - name: Extract release notes from changelog
+        run: |
+          python scripts/release/extract-changelog-section.py "${GITHUB_REF_NAME}"
+          cat release-notes.rst
+
+      - name: Prepare Android release signing key
+        env:
+          ANDROID_RELEASE_KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+          P4A_RELEASE_KEYSTORE_PASSWD: ${{ secrets.P4A_RELEASE_KEYSTORE_PASSWD }}
+          P4A_RELEASE_KEYALIAS: ${{ secrets.P4A_RELEASE_KEYALIAS }}
+          P4A_RELEASE_KEYALIAS_PASSWD: ${{ secrets.P4A_RELEASE_KEYALIAS_PASSWD }}
+        run: |
+          test -n "${ANDROID_RELEASE_KEYSTORE_BASE64}"
+          test -n "${P4A_RELEASE_KEYSTORE_PASSWD}"
+          test -n "${P4A_RELEASE_KEYALIAS}"
+          test -n "${P4A_RELEASE_KEYALIAS_PASSWD}"
+          mkdir -p .release-signing/android
+          printf '%s' "${ANDROID_RELEASE_KEYSTORE_BASE64}" | base64 --decode > .release-signing/android/pythonhere-release.keystore
+          chmod 600 .release-signing/android/pythonhere-release.keystore
+
+      - name: Prepare Buildozer release spec
+        run: |
+          grep -qx 'title = PythonHereDev' buildozer.spec
+          sed -i 's/^title = PythonHereDev$/title = PythonHere/' buildozer.spec
+          sed -n '1,8p' buildozer.spec
+
+      - name: Install Rust
+        run: |
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal
+          rustup default "$RUST_TOOLCHAIN"
+          rustc --version
+          cargo --version
+
+      - name: Build Android release APK with Buildozer Docker image
+        shell: bash
+        env:
+          P4A_RELEASE_KEYSTORE: /home/user/hostcwd/.release-signing/android/pythonhere-release.keystore
+          P4A_RELEASE_KEYSTORE_PASSWD: ${{ secrets.P4A_RELEASE_KEYSTORE_PASSWD }}
+          P4A_RELEASE_KEYALIAS: ${{ secrets.P4A_RELEASE_KEYALIAS }}
+          P4A_RELEASE_KEYALIAS_PASSWD: ${{ secrets.P4A_RELEASE_KEYALIAS_PASSWD }}
+        run: |
+          set -o pipefail
+          mkdir -p .buildozer bin
+          sudo chown -R 1000:1000 .buildozer bin
+
+          docker run --rm \
+            -e RUSTUP_HOME=/home/user/.rustup \
+            -e CARGO_HOME=/home/user/.cargo \
+            -e PATH=/home/user/.cargo/bin:/home/user/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+            -e P4A_RELEASE_KEYSTORE="${P4A_RELEASE_KEYSTORE}" \
+            -e P4A_RELEASE_KEYSTORE_PASSWD="${P4A_RELEASE_KEYSTORE_PASSWD}" \
+            -e P4A_RELEASE_KEYALIAS="${P4A_RELEASE_KEYALIAS}" \
+            -e P4A_RELEASE_KEYALIAS_PASSWD="${P4A_RELEASE_KEYALIAS_PASSWD}" \
+            -v "$PWD":/home/user/hostcwd \
+            -v "$HOME/.rustup":/home/user/.rustup \
+            -v "$HOME/.cargo":/home/user/.cargo \
+            -w /home/user/hostcwd \
+            "$BUILDOZER_IMAGE" \
+            android release 2>&1 | tee "$BUILDOZER_BUILD_LOG"
+
+      - name: Prepare APK release assets
+        id: apk
+        run: |
+          apk_name="pythonhere-${GITHUB_REF_NAME}-arm64-v8a-release.apk"
+          apk="$(find bin -name '*.apk' -type f | head -n 1)"
+
+          if [[ -z "$apk" ]]; then
+            echo "::error::No APK found"
+            exit 1
+          fi
+
+          sudo ls -l "$apk"
+          sudo cp "$apk" "${apk_name}"
+          sudo chown "$(id -u):$(id -g)" "${apk_name}"
+          sha256sum "${apk_name}" > "${apk_name}.sha256"
+          echo "filename=${apk_name}" >> "$GITHUB_OUTPUT"
+          echo "sha256=${apk_name}.sha256" >> "$GITHUB_OUTPUT"
+          ls -lh "${apk_name}" "${apk_name}.sha256"
+          cat "${apk_name}.sha256"
+
+      - name: Generate APK provenance attestation
+        uses: actions/attest@v4
         with:
-          command: buildozer android debug
-          repository_root: .
-          workdir: .
-          buildozer_version: stable
+          subject-path: |
+            ${{ steps.apk.outputs.filename }}
+            ${{ steps.apk.outputs.sha256 }}
 
-      - name: List APK building result
-        run: sudo ls -l "${{ steps.buildozer.outputs.filename }}"
-
-      - name: Show APK checksum
-        run: sha256sum "${{ steps.buildozer.outputs.filename }}"
-
-      - name: Create release
+      - name: Create draft GitHub Release
         id: create_release
-        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: "${{ steps.version.outputs.VERSION }}"
-          release_name: "Release ${{ steps.version.outputs.VERSION }}"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! release_json="$(gh api "/repos/${GITHUB_REPOSITORY}/releases/tags/${GITHUB_REF_NAME}" 2>/dev/null)"; then
+            release_json="$(
+              gh api \
+                --method POST \
+                "/repos/${GITHUB_REPOSITORY}/releases" \
+                -f tag_name="${GITHUB_REF_NAME}" \
+                -f name="Release ${GITHUB_REF_NAME}" \
+                -F body=@release-notes.rst \
+                -F draft=true
+            )"
+          else
+            gh api \
+              --method PATCH \
+              "/repos/${GITHUB_REPOSITORY}/releases/$(printf '%s' "${release_json}" | python -c 'import json, sys; print(json.load(sys.stdin)["id"])')" \
+              -F body=@release-notes.rst \
+              >/dev/null
+          fi
+          release_id="$(printf '%s' "${release_json}" | python -c 'import json, sys; print(json.load(sys.stdin)["id"])')"
+          echo "release_id=${release_id}" >> "$GITHUB_OUTPUT"
 
-      - name: Upload APK
-        uses: actions/upload-release-asset@v1
+      - name: Upload APK to draft GitHub Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{ steps.buildozer.outputs.filename }}"
-          asset_name: "pythonhere-debug-${{ steps.version.outputs.VERSION }}.apk"
-          asset_content_type: application/vnd.android.package-archive
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APK_FILE: ${{ steps.apk.outputs.filename }}
+          APK_SHA256_FILE: ${{ steps.apk.outputs.sha256 }}
+        run: |
+          gh release upload "${GITHUB_REF_NAME}" "${APK_FILE}" "${APK_SHA256_FILE}" --clobber
 
-      - name: Upload package to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: twine upload dist/*
+      # - name: Upload package to PyPI
+      #   env:
+      #     TWINE_USERNAME: __token__
+      #     TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+      #   run: twine upload --skip-existing dist/*
+ 
+      # - name: Publish GitHub Release
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     RELEASE_ID: ${{ steps.create_release.outputs.release_id }}
+      #   run: |
+      #     gh api \
+      #       --method PATCH \
+      #       "/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" \
+      #       -F draft=false
+
+      - name: Upload Buildozer build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildozer-build-log
+          path: ${{ env.BUILDOZER_BUILD_LOG }}
+          if-no-files-found: ignore
+          retention-days: 8

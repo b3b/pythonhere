@@ -29,6 +29,7 @@ coverage.xml
 
 *.apk
 key.rsa
+.release-signing/
 
 docker-compose.yml
 work
