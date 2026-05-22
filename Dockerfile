@@ -1,15 +1,15 @@
-FROM jupyter/base-notebook:python-3.8.6
+FROM quay.io/jupyter/base-notebook:python-3.13
 
-COPY . /src
-COPY examples /home/${NB_USER}/examples
+COPY --chown=${NB_USER}:users . /home/${NB_USER}/src
+COPY --chown=${NB_USER}:users examples /home/${NB_USER}/examples
 
-RUN cd /src && pip install .[dev,docker]
+RUN cd /home/${NB_USER}/src && \
+    python -m pip install --upgrade pip && \
+    python -m pip install . --group docker && \
+    python -m pip check
 
-USER root
 RUN cd /home/${NB_USER}/examples && \
     jupytext --to ipynb *.md && \
     rm *.md && \
-    chown -R ${NB_USER} \
-    /usr/local/bin/fix-permissions /home/${NB_USER}/examples &&\
     rm -rf /home/${NB_USER}/.cache && \
-    rm -rf /src
+    rm -rf /home/${NB_USER}/src

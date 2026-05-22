@@ -22,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "herethere>=0.1.0",
+    "herethere[magic]>=0.1.0",
     "ipython",
     "ipywidgets",
     "Pillow",
@@ -47,7 +47,7 @@ dev = [
     "twine",
 ]
 docker = [
-    "jupytext==1.7.1",
+    "jupytext==1.19.3",
 ]
 
 [project.urls]

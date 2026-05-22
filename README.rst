@@ -55,6 +55,9 @@ Example command to start the Docker container::
     docker run \
            --rm \
            -p 8888:8888 \
+           --user root \
+           -e CHOWN_EXTRA=/home/jovyan/work \
+           -e CHOWN_EXTRA_OPTS='-R' \
            -v "$(pwd)/work":/home/jovyan/work \
            herethere/pythonhere:latest
 

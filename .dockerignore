@@ -1,10 +1,12 @@
 build
 dist
+pythonhere.egg-info
 *.egg-info
 *.egg/
 *.pyc
 *.swp
 
+.gitignore
 .tox
 .coverage
 html/*
@@ -13,3 +15,7 @@ __pycache__
 **/.git
 **/.buildozer
 **/.*
+**/.venv
+
+midistream
+herethere

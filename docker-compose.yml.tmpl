@@ -7,8 +7,11 @@ services:
     # build: .
     ports:
       - 8888:8888
+    user: root      
+    environment:
+      - CHOWN_EXTRA=/home/jovyan/work
+      - CHOWN_EXTRA_OPTS=-R
     # Uncomment and fill in environment, to override values from there.env config
-    # environment:
     #   - THERE_HOST=
     #   - THERE_PORT=8022
     #   - THERE_USER=
