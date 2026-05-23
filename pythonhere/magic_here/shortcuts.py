@@ -66,7 +66,9 @@ def screenshot(ctx, width, output):
     img = PILImage.open(BytesIO(data)).convert("RGB")
     if width:
         height = int(width * img.size[1] // img.size[0])
-        img = img.resize((width, height), PILImage.ANTIALIAS)
+        resampling = getattr(PILImage, "Resampling", PILImage)
+        resample_filter = getattr(resampling, "LANCZOS", PILImage.LANCZOS)
+        img = img.resize((width, height), resample_filter)
 
     if output:
         img.save(output)

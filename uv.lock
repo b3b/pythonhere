@@ -482,6 +482,14 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/14/d5/f35fb06b17575fa61daf9013fe526735c522088cdaa5681c5d0923ea1b3f/herethere-0.2.0-py3-none-any.whl", hash = "sha256:62b27942c47785ecb5db8ee7894342ce85aa458ebeb0796eb0f83048f809b29b", size = 18503, upload-time = "2026-05-17T15:41:50.104Z" },
 ]
 
+[package.optional-dependencies]
+magic = [
+    { name = "ipython", version = "8.39.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11' and sys_platform == 'linux'" },
+    { name = "ipython", version = "9.13.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' and sys_platform == 'linux'" },
+    { name = "ipywidgets", marker = "sys_platform == 'linux'" },
+    { name = "nest-asyncio2", marker = "sys_platform == 'linux'" },
+]
+
 [[package]]
 name = "id"
 version = "1.6.1"
@@ -715,17 +723,19 @@ wheels = [
 
 [[package]]
 name = "jupytext"
-version = "1.7.1"
+version = "1.19.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown-it-py", marker = "sys_platform == 'linux'" },
+    { name = "mdit-py-plugins", marker = "sys_platform == 'linux'" },
     { name = "nbformat", marker = "sys_platform == 'linux'" },
+    { name = "packaging", marker = "sys_platform == 'linux'" },
     { name = "pyyaml", marker = "sys_platform == 'linux'" },
-    { name = "toml", marker = "sys_platform == 'linux'" },
+    { name = "tomli", marker = "python_full_version < '3.11' and sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/70/6a/c5244e2884990164a8c0178c7f66d824c3544235ef1c36d787a20e718236/jupytext-1.7.1.tar.gz", hash = "sha256:23123b90c267c67716fe6a022dfae49b84fd3809370d83211f2920eb3106bf40", size = 659537, upload-time = "2020-11-16T08:18:09.362Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ef/2d/15624c3d9440d85a280ff13d2d23afd989802f25470ac59932f4fef6f0c6/jupytext-1.19.3.tar.gz", hash = "sha256:713c3ed4441afe0f31474d28ea2e6b61a268c04c40fd78e5ccfd7f7ac9e9f766", size = 4305350, upload-time = "2026-05-17T09:09:29.294Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e4/1e/3f5176911f511718ce0c796fc72dbe6d0f4acffea41e40eef899a6d18533/jupytext-1.7.1-py3-none-any.whl", hash = "sha256:e48f57afdc807cc2d2920bd6ae18455264db78b1fc78061ad70dcc26dc45a2cb", size = 284200, upload-time = "2020-11-16T08:18:08.387Z" },
+    { url = "https://files.pythonhosted.org/packages/aa/ec/d9be3bd1db141e76b2f525c265f70e66edd30a51a3307d8edf0ef1909c54/jupytext-1.19.3-py3-none-any.whl", hash = "sha256:acf75492f80895ad8e664fd8db1708b617008dd0e71c341a1abc3d0d07310ed0", size = 170579, upload-time = "2026-05-17T09:09:27.478Z" },
 ]
 
 [[package]]
@@ -781,14 +791,14 @@ wheels = [
 
 [[package]]
 name = "markdown-it-py"
-version = "0.5.8"
+version = "4.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "attrs", marker = "sys_platform == 'linux'" },
+    { name = "mdurl", marker = "sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/00/9d/5a6eb936fbaf0ea900f96dd9188f6a8d6d6ae25205dc683bbcc6abaebfe3/markdown-it-py-0.5.8.tar.gz", hash = "sha256:488ea44bee25fdc8dea0d267c292d4ae82ff7e1a2388e450836561c56eac7699", size = 74282, upload-time = "2020-12-13T20:19:31.248Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/06/ff/7841249c247aa650a76b9ee4bbaeae59370dc8bfd2f6c01f3630c35eb134/markdown_it_py-4.2.0.tar.gz", hash = "sha256:04a21681d6fbb623de53f6f364d352309d4094dd4194040a10fd51833e418d49", size = 82454, upload-time = "2026-05-07T12:08:28.36Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f8/1b/0e24960d9f6553f3ea170f5fe56bb0230943a968c2a6fbcca7ed49b9cd6e/markdown_it_py-0.5.8-py3-none-any.whl", hash = "sha256:d71989a540588875bb60919feb4ce83989beb2d4dd018f7a6ed475d4cf0c76ff", size = 110115, upload-time = "2020-12-13T20:19:30.047Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/81/4da04ced5a082363ecfa159c010d200ecbd959ae410c10c0264a38cac0f5/markdown_it_py-4.2.0-py3-none-any.whl", hash = "sha256:9f7ebbcd14fe59494226453aed97c1070d83f8d24b6fc3a3bcf9a38092641c4a", size = 91687, upload-time = "2026-05-07T12:08:27.182Z" },
 ]
 
 [[package]]
@@ -810,6 +820,27 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e7/ff/0ffefdcac38932a54d2b5eed4e0ba8a408f215002cd178ad1df0f2806ff8/mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325", size = 9658, upload-time = "2022-01-24T01:14:51.113Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/27/1a/1f68f9ba0c207934b35b86a8ca3aad8395a3d6dd7921c0686e23853ff5a9/mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e", size = 7350, upload-time = "2022-01-24T01:14:49.62Z" },
+]
+
+[[package]]
+name = "mdit-py-plugins"
+version = "0.6.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "markdown-it-py", marker = "sys_platform == 'linux'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/59/fc/f8d0863f8862f25602c0404d75568e89fb6b4109804645e5cdfb1be5cf56/mdit_py_plugins-0.6.1.tar.gz", hash = "sha256:a2bca0f039f39dbd35fb74ae1b5f998608c437463371f0ff7f49a19a17a114d0", size = 56114, upload-time = "2026-05-13T09:03:38.91Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a5/69/6da5581c6a7fede7dc261bf4e67d6adca4196f176b43288b55b3db395b6e/mdit_py_plugins-0.6.1-py3-none-any.whl", hash = "sha256:214c82fb2ac524472ab6a5bcab1de80f73b50443e187f401bfd77efbc7c6481d", size = 66663, upload-time = "2026-05-13T09:03:37.76Z" },
+]
+
+[[package]]
+name = "mdurl"
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
 ]
 
 [[package]]
@@ -1178,7 +1209,7 @@ wheels = [
 name = "pythonhere"
 source = { editable = "." }
 dependencies = [
-    { name = "herethere", marker = "sys_platform == 'linux'" },
+    { name = "herethere", extra = ["magic"], marker = "sys_platform == 'linux'" },
     { name = "ipython", version = "8.39.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11' and sys_platform == 'linux'" },
     { name = "ipython", version = "9.13.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' and sys_platform == 'linux'" },
     { name = "ipywidgets", marker = "sys_platform == 'linux'" },
@@ -1209,7 +1240,7 @@ docker = [
 
 [package.metadata]
 requires-dist = [
-    { name = "herethere", specifier = ">=0.1.0" },
+    { name = "herethere", extras = ["magic"], specifier = ">=0.1.0" },
     { name = "ipython" },
     { name = "ipywidgets" },
     { name = "pillow" },
@@ -1221,7 +1252,7 @@ dev = [
     { name = "codecov" },
     { name = "docutils" },
     { name = "ifaddr" },
-    { name = "jupytext", specifier = "==1.7.1" },
+    { name = "jupytext", specifier = "==1.19.3" },
     { name = "kivy", specifier = "==2.3.1" },
     { name = "nest-asyncio2", specifier = "==1.7.2" },
     { name = "pygame" },
@@ -1233,7 +1264,7 @@ dev = [
     { name = "ruff" },
     { name = "twine" },
 ]
-docker = [{ name = "jupytext", specifier = "==1.7.1" }]
+docker = [{ name = "jupytext", specifier = "==1.19.3" }]
 
 [[package]]
 name = "pyyaml"
@@ -1381,15 +1412,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/28/e3/55dcc2cfbc3ca9c29519eb6884dd1415ecb53b0e934862d3559ddcb7e20b/stack_data-0.6.3.tar.gz", hash = "sha256:836a778de4fec4dcd1dcd89ed8abff8a221f58308462e1c4aa2a3cf30148f0b9", size = 44707, upload-time = "2023-09-30T13:58:05.479Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f1/7b/ce1eafaf1a76852e2ec9b22edecf1daa58175c090266e9f6c64afcd81d91/stack_data-0.6.3-py3-none-any.whl", hash = "sha256:d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695", size = 24521, upload-time = "2023-09-30T13:58:03.53Z" },
-]
-
-[[package]]
-name = "toml"
-version = "0.10.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/be/ba/1f744cdc819428fc6b5084ec34d9b30660f6f9daaf70eead706e3203ec3c/toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f", size = 22253, upload-time = "2020-11-01T01:40:22.204Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/6f/7120676b6d73228c96e17f1f794d8ab046fc910d781c8d151120c3f1569e/toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b", size = 16588, upload-time = "2020-11-01T01:40:20.672Z" },
 ]
 
 [[package]]

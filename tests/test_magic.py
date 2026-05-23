@@ -40,6 +40,16 @@ async def test_screenshot_saved_to_file(tmpdir, app_instance, call_there_group):
 
 
 @pytest.mark.asyncio
+async def test_screenshot_resized_to_width(tmpdir, app_instance, call_there_group):
+    output = Path(tmpdir) / "test.png"
+
+    call_there_group(["screenshot", "--width", "100", "-o", output], "")
+
+    image = shortcuts.PILImage.open(output)
+    assert image.size == (100, 75)
+
+
+@pytest.mark.asyncio
 async def test_pin_command_pin_shortcut_called(
     mocker, capfd, mocked_android_modules, call_there_group, test_py_script
 ):
