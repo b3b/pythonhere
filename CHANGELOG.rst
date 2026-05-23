@@ -1,6 +1,24 @@
 Changelog
 =========
 
+0.2.0
+-----
+
+This is a major maintenance release focused on updating PythonHere for the
+current Android and Python runtime stack. It updates the app to Python 3.14,
+python-for-android v2026.05.09, and Kivy 2.3.1, and moves Android APK
+distribution from Google Play to GitHub Releases.
+
+* Starting with version ``0.2.0``, PythonHere Android APKs are distributed
+  through GitHub Releases as the central distribution channel and are signed
+  with the PythonHere Android signing certificate
+* Added support for Python 3.10 through 3.14
+* Removed support for Python versions older than 3.10
+* Updated Android APK builds for current Android versions
+* Improved app startup and shutdown handling
+* Fixed SSH server exception logging
+* Fixed duplicate Kivy exception handlers and duplicate KV loading
+
 0.1.5
 -----
 
