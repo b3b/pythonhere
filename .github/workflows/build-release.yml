@@ -64,7 +64,9 @@ jobs:
       - name: Prepare Buildozer release spec
         run: |
           grep -qx 'title = PythonHereDev' buildozer.spec
+          grep -qx 'package.name = pythonhere_dev' buildozer.spec
           sed -i 's/^title = PythonHereDev$/title = PythonHere/' buildozer.spec
+          sed -i 's/^package.name = pythonhere_dev$/package.name = pythonhere/' buildozer.spec
           sed -n '1,8p' buildozer.spec
 
       - name: Install Rust
