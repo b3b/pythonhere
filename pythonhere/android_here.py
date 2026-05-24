@@ -22,7 +22,7 @@ def get_current_intent() -> Intent:
     return PythonActivity.mActivity.getIntent()
 
 
-def get_startup_script(intent: None = None) -> str | None:
+def get_startup_script(intent: Intent | None = None) -> str | None:
     """Return script entrypoint that was passed to a given, or current, intent."""
     if not intent:
         intent = get_current_intent()
@@ -35,8 +35,7 @@ def restart_app(script: str = None):
     Logger.info("PythonHere: restart requested with a script: %s", script)
     activity = PythonActivity.mActivity
     intent = Intent(activity.getApplicationContext(), PythonActivity)
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
     if script:
         intent.setData(Uri.parse(script))
@@ -59,11 +58,17 @@ def bind_run_script_on_new_intent():
 
 
 def create_shortcut_icon() -> Icon:
-    """Create icon to use for a shurtcut."""
+    """Create icon to use for a shortcut."""
     activity = PythonActivity.mActivity
-    Drawable = autoclass(f"{activity.getPackageName()}.R$drawable")
     context = cast("android.content.Context", activity.getApplicationContext())
-    return Icon.createWithResource(context, Drawable.icon)
+
+    app_info = context.getApplicationInfo()
+    icon_res_id = app_info.icon
+
+    if not icon_res_id:
+        raise RuntimeError("Application icon resource id was not found")
+
+    return Icon.createWithResource(context, icon_res_id)
 
 
 def resolve_script_path(script: str) -> str:
@@ -97,4 +102,6 @@ def pin_shortcut(script: str, label: str):
     )
 
     manager = activity.getSystemService(Context.SHORTCUT_SERVICE)
+    if not manager.isRequestPinShortcutSupported():
+        raise RuntimeError("Pinned shortcuts are not supported by this launcher")
     manager.requestPinShortcut(shortcut, None)
