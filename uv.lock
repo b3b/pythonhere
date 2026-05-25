@@ -470,16 +470,16 @@ wheels = [
 
 [[package]]
 name = "herethere"
-version = "0.2.0"
+version = "0.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asyncssh", marker = "sys_platform == 'linux'" },
     { name = "click", marker = "sys_platform == 'linux'" },
     { name = "python-dotenv", marker = "sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/32/f9/108a004dc5de67f00cf2e86fa18bb0617852a082bc4c19bee5d8094faaf7/herethere-0.2.0.tar.gz", hash = "sha256:c60019a149d2f84da329616ff34cde2d6473d1f1bce699d3b0e70c80ca27d21c", size = 18115, upload-time = "2026-05-17T15:41:51.577Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/38/c9/a4fea92b31e272866422f0ca46232cc8959768d7412758b726d564d74284/herethere-0.2.1.tar.gz", hash = "sha256:be4fd93485ca633320e15b66e8d3df9c680a5a981cea27ea079b8fef3f9749d4", size = 25665, upload-time = "2026-05-25T19:45:23.689Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/14/d5/f35fb06b17575fa61daf9013fe526735c522088cdaa5681c5d0923ea1b3f/herethere-0.2.0-py3-none-any.whl", hash = "sha256:62b27942c47785ecb5db8ee7894342ce85aa458ebeb0796eb0f83048f809b29b", size = 18503, upload-time = "2026-05-17T15:41:50.104Z" },
+    { url = "https://files.pythonhosted.org/packages/86/33/2c9dfabe56c14e8e19000596b045aec69dde465a84d7c923346dfc8d7093/herethere-0.2.1-py3-none-any.whl", hash = "sha256:c5a509ad723b82e7984a3315d8dbe772501bf3b8ef30717c71cd049e7cf0ea94", size = 25472, upload-time = "2026-05-25T19:45:22.457Z" },
 ]
 
 [package.optional-dependencies]
@@ -487,7 +487,6 @@ magic = [
     { name = "ipython", version = "8.39.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11' and sys_platform == 'linux'" },
     { name = "ipython", version = "9.13.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' and sys_platform == 'linux'" },
     { name = "ipywidgets", marker = "sys_platform == 'linux'" },
-    { name = "nest-asyncio2", marker = "sys_platform == 'linux'" },
 ]
 
 [[package]]
@@ -868,15 +867,6 @@ wheels = [
 ]
 
 [[package]]
-name = "nest-asyncio2"
-version = "1.7.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b4/73/731debf26e27e0a0323d7bda270dc2f634b398e38f040a09da1f4351d0aa/nest_asyncio2-1.7.2.tar.gz", hash = "sha256:1921d70b92cc4612c374928d081552efb59b83d91b2b789d935c665fa01729a8", size = 14743, upload-time = "2026-02-13T00:34:04.386Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c5/3c/3179b85b0e1c3659f0369940200cd6d0fa900e6cefcc7ea0bc6dd0e29ffb/nest_asyncio2-1.7.2-py3-none-any.whl", hash = "sha256:f5dfa702f3f81f6a03857e9a19e2ba578c0946a4ad417b4c50a24d7ba641fe01", size = 7843, upload-time = "2026-02-13T00:34:02.691Z" },
-]
-
-[[package]]
 name = "nh3"
 version = "0.3.5"
 source = { registry = "https://pypi.org/simple" }
@@ -1204,7 +1194,6 @@ dev = [
     { name = "ifaddr", marker = "sys_platform == 'linux'" },
     { name = "jupytext", marker = "sys_platform == 'linux'" },
     { name = "kivy", marker = "sys_platform == 'linux'" },
-    { name = "nest-asyncio2", marker = "sys_platform == 'linux'" },
     { name = "pylint", marker = "sys_platform == 'linux'" },
     { name = "pytest", marker = "sys_platform == 'linux'" },
     { name = "pytest-asyncio", marker = "sys_platform == 'linux'" },
@@ -1219,7 +1208,7 @@ docker = [
 
 [package.metadata]
 requires-dist = [
-    { name = "herethere", extras = ["magic"], specifier = ">=0.1.0" },
+    { name = "herethere", extras = ["magic"], specifier = ">=0.2.1" },
     { name = "ipython" },
     { name = "ipywidgets" },
     { name = "pillow" },
@@ -1233,7 +1222,6 @@ dev = [
     { name = "ifaddr" },
     { name = "jupytext", specifier = "==1.19.3" },
     { name = "kivy", specifier = "==2.3.1" },
-    { name = "nest-asyncio2", specifier = "==1.7.2" },
     { name = "pylint" },
     { name = "pytest" },
     { name = "pytest-asyncio" },

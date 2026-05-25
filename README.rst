@@ -16,7 +16,7 @@ PythonHere
     :alt: Supported Python versions
 .. image:: https://github.com/b3b/pythonhere/actions/workflows/tests.yml/badge.svg?branch=master
    :target: https://github.com/b3b/pythonhere/actions/workflows/tests.yml?query=branch%3Amaster
-   :alt: CI Status          
+   :alt: CI Status
 .. image:: https://codecov.io/github/b3b/pythonhere/coverage.svg?branch=master
     :target: https://codecov.io/github/b3b/pythonhere?branch=master
     :alt: Code coverage Status
@@ -43,6 +43,9 @@ Project documentation: https://herethere.me/pythonhere
 
 Install the Android app
 -----------------------
+
+Install *PythonHere* with `Obtainium <https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/b3b/pythonhere>`_
+to receive updates from GitHub Releases.
 
 Ready-to-use *PythonHere* APKs are available from the `GitHub Releases <https://github.com/b3b/pythonhere/releases>`_ page.
 

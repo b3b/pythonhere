@@ -1,6 +1,19 @@
 Changelog
 =========
 
+0.2.1
+-----
+
+* Updated ``herethere`` package to 0.2.1, adding ``%there get`` and
+  ``%there download`` commands
+* Fixed Android shortcut icon lookup for ``%there pin``
+* Fixed ``%there`` reliability issues in notebooks, including event loop
+  handling, port reuse after server shutdown, and cleanup behavior
+* Improved Docker JupyterLab defaults
+* Separated Android package names:
+  ``me.herethere.pythonhere`` for releases and
+  ``me.herethere.pythonhere_dev`` for source/self-built builds
+
 0.2.0
 -----
 

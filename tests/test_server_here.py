@@ -60,7 +60,7 @@ async def test_run_ssh_server_clears_config_ready_after_start_error(mocker):
     start_server.assert_called_once()
     config = start_server.call_args.args[0]
     assert config.host == ""
-    assert config.chroot == app.upload_dir
+    assert config.sftp_root == app.upload_dir
     assert config.key_path == Path("./key.rsa").resolve()
     assert not app.ssh_server_config_ready.is_set()
     show_exception_popup.assert_called_once_with(start_error)

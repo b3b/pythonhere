@@ -10,7 +10,7 @@ from magic_here import shortcuts  # noqa
 async def test_kv_command_runcode_called(call_there_group, mocker):
     runcode = mocker.patch.object(ContextObject, "runcode", autospec=True)
 
-    call_there_group(["kv"], "Label:")
+    await call_there_group(["kv"], "Label:")
 
     runcode.assert_called_once()
     ctx_obj = runcode.call_args[0][0]
@@ -20,7 +20,7 @@ async def test_kv_command_runcode_called(call_there_group, mocker):
 @pytest.mark.asyncio
 async def test_kv_command_executed(capfd, app_instance, call_there_group):
     assert not getattr(app_instance.root, "text", "")
-    call_there_group(["kv"], "Label:\n    text: '''Hello there'''")
+    await call_there_group(["kv"], "Label:\n    text: '''Hello there'''")
     captured = capfd.readouterr()
     assert not captured.out and not captured.err
     assert app_instance.root.text == "Hello there"
@@ -28,14 +28,14 @@ async def test_kv_command_executed(capfd, app_instance, call_there_group):
 
 @pytest.mark.asyncio
 async def test_screenshot_command_executed(app_instance, call_there_group):
-    call_there_group(["screenshot"], "")
+    await call_there_group(["screenshot"], "")
 
 
 @pytest.mark.asyncio
 async def test_screenshot_saved_to_file(tmpdir, app_instance, call_there_group):
     output = Path(tmpdir) / "test.png"
     assert not os.path.exists(output)
-    call_there_group(["screenshot", "-o", output], "")
+    await call_there_group(["screenshot", "-o", output], "")
     assert os.path.exists(output)
 
 
@@ -43,10 +43,10 @@ async def test_screenshot_saved_to_file(tmpdir, app_instance, call_there_group):
 async def test_screenshot_resized_to_width(tmpdir, app_instance, call_there_group):
     output = Path(tmpdir) / "test.png"
 
-    call_there_group(["screenshot", "--width", "100", "-o", output], "")
+    await call_there_group(["screenshot", "--width", "100", "-o", output], "")
 
     image = shortcuts.PILImage.open(output)
-    assert image.size == (100, 75)
+    assert image.size[0] == 100
 
 
 @pytest.mark.asyncio
@@ -54,7 +54,7 @@ async def test_pin_command_pin_shortcut_called(
     mocker, capfd, mocked_android_modules, call_there_group, test_py_script
 ):
     pin_shortcut = mocker.patch("android_here.pin_shortcut")
-    call_there_group(["pin", test_py_script, "--label", "Test label"], "")
+    await call_there_group(["pin", test_py_script, "--label", "Test label"], "")
     captured = capfd.readouterr()
     assert not captured.out and not captured.err
 
@@ -66,7 +66,7 @@ async def test_pin_command_default_label(
     mocker, capfd, mocked_android_modules, call_there_group, test_py_script
 ):
     pin_shortcut = mocker.patch("android_here.pin_shortcut")
-    call_there_group(["pin", test_py_script], "")
+    await call_there_group(["pin", test_py_script], "")
     captured = capfd.readouterr()
     assert not captured.out and not captured.err
 

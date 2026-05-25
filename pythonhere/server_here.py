@@ -30,7 +30,7 @@ async def run_ssh_server(app):
         try:
             config = ServerConfig(
                 host="",
-                chroot=app.upload_dir,
+                sftp_root=app.upload_dir,
                 key_path=Path("./key.rsa").resolve(),
                 **app.get_pythonhere_config(),
             )
