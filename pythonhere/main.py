@@ -12,12 +12,14 @@ else:
     startup_script_exception = None  # pylint: disable=invalid-name
 
 import asyncio
+import logging
 import os
 import sys
 import threading
 from pathlib import Path
 from typing import Any
 
+import asyncssh
 from enum_here import ScreenName, ServerState
 from exception_manager_here import install_exception_handler, show_exception_popup
 from kivy.app import App
@@ -29,6 +31,12 @@ from server_here import run_ssh_server
 from window_here import reset_window_environment
 
 monkeypatch_kivy()
+
+
+def configure_logging():
+    """Configure logging for the app runtime."""
+    logging.getLogger().setLevel(logging.INFO)
+    asyncssh.set_log_level("WARNING")
 
 
 class PythonHereApp(App):
@@ -217,6 +225,7 @@ class PythonHereApp(App):
 
 async def main():
     """Run PythonHere."""
+    configure_logging()
     app = PythonHereApp()
     await app.run_app()
 

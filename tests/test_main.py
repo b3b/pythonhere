@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import PropertyMock
@@ -6,13 +7,43 @@ from unittest.mock import PropertyMock
 import pytest
 from asyncssh import PermissionDenied
 from enum_here import ScreenName, ServerState
-from main import PythonHereApp
+from main import PythonHereApp, configure_logging, main
 from ui_here.server_screen_here import ServerScreenManager
 from version_here import __version__
 
 
 def test_dev_version_is_set():
     assert __version__ == "0.0.0"
+
+
+def test_configure_logging_sets_default_info_and_asyncssh_warning(mocker):
+    set_log_level = mocker.patch("main.asyncssh.set_log_level")
+    root_logger = logging.getLogger()
+
+    original_level = root_logger.level
+    try:
+        root_logger.setLevel(logging.NOTSET)
+
+        configure_logging()
+
+        assert root_logger.level == logging.INFO
+        set_log_level.assert_called_once_with("WARNING")
+    finally:
+        root_logger.setLevel(original_level)
+
+
+@pytest.mark.asyncio
+async def test_main_configures_logging_before_running_app(mocker):
+    configure = mocker.patch("main.configure_logging")
+    app = mocker.Mock()
+    app.run_app = mocker.AsyncMock()
+    app_class = mocker.patch("main.PythonHereApp", return_value=app)
+
+    await main()
+
+    configure.assert_called_once_with()
+    app_class.assert_called_once_with()
+    app.run_app.assert_awaited_once_with()
 
 
 def test_server_screen_update_states(mocker):
