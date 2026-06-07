@@ -84,6 +84,12 @@ android.permissions =
                     BLUETOOTH_SCAN,
                     BLUETOOTH_CONNECT,
                     BLUETOOTH_ADVERTISE,
+                    android.permission.MANAGE_EXTERNAL_STORAGE,
+                    android.permission.QUERY_ALL_PACKAGES,
+                    android.permission.READ_MEDIA_IMAGES,
+                    android.permission.PACKAGE_USAGE_STATS,
+                    android.permission.POST_NOTIFICATIONS,
+                    android.permission.RECORD_AUDIO,
 
 android.wakelock=True
 android.manifest.launch_mode = singleTask
