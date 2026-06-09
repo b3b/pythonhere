@@ -1,22 +1,21 @@
 ---
-jupyter:
-  jupytext:
-    text_representation:
-      extension: .md
-      format_name: markdown
-      format_version: '1.2'
-      jupytext_version: 1.7.1
-  kernelspec:
-    display_name: Python 3
-    language: python
-    name: python3
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.19.3
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
 ---
 
 # Jupyter magic commands
 
 Commands are provided by the *pythonhere* extension
 
-```python
+```{code-cell}
 %load_ext pythonhere
 ```
 
@@ -28,12 +27,12 @@ If argument is not provided, values are loaded from the **there.env** file.
 
 Config values could be overridden by environment variables with same names.
 
-```python
+```{code-cell}
 import os
 os.environ["THERE_PORT"] = "8022"
 ```
 
-```python
+```{code-cell}
 %connect-there there.env
 ```
 
@@ -43,36 +42,70 @@ os.environ["THERE_PORT"] = "8022"
 THERE_HOST=127.0.0.1
 
 # Port, as set in PythonHere app Settings section
-THERE_PORT=8023
+THERE_PORT=8022
 
 # Username, as set in PythonHere app Settings section
-THERE_USERNAME=admin
+THERE_USERNAME=here
 
 # Password, as set in PythonHere app Settings section
 THERE_PASSWORD=xxx
 ```
 
++++
 
 ## %there group of commands
 
-```python
+```{code-cell}
 %there --help
 ```
 
 Default action for *%there*, if command is not specified - execute python code.
 
++++
 
 ### there
 **Execute python code on the remote side.**<br>
 
-```python
+```{code-cell} python
+:tags: ["hide-output"]
 %%there 
 import this
 ```
 
+### get
+
+Evaluate a Python expression on the remote PythonHere side and return the value to the local notebook.
+
+```{code-cell}
+%there get --help
+```
+
+```{code-cell}
+%%there
+device_status = {
+    "root_class": root.__class__.__name__ if "root" in globals() else None,
+    "child_count": len(root.children) if "root" in globals() else None,
+}
+```
+
+```{code-cell}
+status = %there get device_status
+status
+```
+
+The expression is evaluated remotely, so it can also inspect live objects:
+
+```{code-cell}
+root_size = %there get tuple(root.size)
+root_size
+```
+
+Use `%there get` for small and inspectable values. For large text, binary data,
+images, CSV files, or directories, write a remote file and use `%there download`.
+
 ### kv
 
-```python
+```{code-cell}
 %there kv --help
 ```
 
@@ -82,8 +115,7 @@ are unloaded before command execution.
 If root widget is defined, it will replace App's current root.
 
 
-
-```python
+```{code-cell}
 %%there kv
 Image:
     source: "../app/data/logo/logo-128.png"
@@ -98,16 +130,16 @@ Image:
 
 ### shell
 
-```python
+```{code-cell}
 %there shell --help
 ```
 
-```python
+```{code-cell}
 %%there shell
 pwd
 ```
 
-```python
+```{code-cell}
 %%there shell
 for i in 1 2 3
 do
@@ -115,76 +147,120 @@ do
 done
 ```
 
-<!-- #region hideCode=false -->
-Listen to Android system logs in the background and show last two lines of output:
-<!-- #endregion -->
++++ {"hideCode": false}
 
-```python
+Listen to Android system logs in the background and show last two lines of output:
+
+```{code-cell}
 %%there -bl 2 shell
 logcat
 ```
 
 ### upload
 
-```python
+```{code-cell}
 %there upload --help
 ```
 
 *upload* root directory is application current working directory.
 
-```python
-!touch some.ico script.py
-!mkdir -p dir1/dir2
+```{code-cell}
+%%bash
+touch some.ico script.py
+mkdir -p dir1/dir2
 ```
 
-```python
+```{code-cell}
 %there upload some.ico script.py dir1 ../
 ```
 
-```python
+```{code-cell} python
 %%there shell
 find
 ```
 
+### download
+
+```{code-cell}
+%there download --help
+```
+
+Files are downloaded from the same remote SFTP root used by `%there upload`.
+
+With one remote path, the destination is the current local directory:
+
+```{code-cell}
+%there download some.ico
+```
+
+Provide a local destination path explicitly:
+
+```{code-cell}
+%there download some.ico ./downloaded-some.ico
+```
+
+Directories use the same command:
+
+```{code-cell}
+%there download dir1 ./downloaded-dir1
+```
+
+For generated data that is too large for `%there get`, save it remotely first:
+
+```{code-cell}
+%%there
+import csv
+
+rows = [
+    {"name": "root_class", "value": root.__class__.__name__},
+    {"name": "child_count", "value": len(root.children)},
+]
+
+with open("pythonhere-report.csv", "w", newline="") as file:
+    writer = csv.DictWriter(file, fieldnames=["name", "value"])
+    writer.writeheader()
+    writer.writerows(rows)
+```
+
+```{code-cell}
+%there download pythonhere-report.csv ./pythonhere-report.csv
+```
 
 ### pin
 
-```python
+```{code-cell}
 %there pin --help
 ```
 
-```python
+```{code-cell}
 %there pin script.py --label "My script"
 ```
 
 ### log
 
-```python
+```{code-cell}
 %there log --help
 ```
 
 ```{note}
-Since the command blocks and never ends, it is useful to run with --backgroud (-b) option
+Since the command blocks and never ends, it is useful to run with --background (-b) option
 ```
 
-```python
+Listen to Python logs in the background and show the last line of output:
+
+```{code-cell}
 %there -b -l 1 log
 ```
 
-```python
-# wait, to make sure *log* cell connection is established before next cell is executed
-import asyncio ; await asyncio.sleep(3)
-```
-
-```python
-%%there
+```{code-cell}
+%%there --delay 4
 from kivy.logger import Logger
-Logger.info(f"Hello from the main cell")
+Logger.info("Example: Hey, Logger!")
 ```
 
-### screeenshot
+### screenshot
 
-```python
+```{code-cell}
 %there screenshot --help
 ```
 
@@ -193,6 +269,39 @@ Logger.info(f"Hello from the main cell")
 * display a result constrained to 200px width,
 * and save image to a local file:
 
-```python
+```{code-cell}
 %there -d 0.5 screenshot -w 200 -o /tmp/screenshot_test.png
+```
+
+## `%%there ai`
+
+Generate a reviewable `%%there` Python cell from a plain-language request.
+The generated cell is inserted locally below the prompt cell. Review or edit it
+before running it on the connected PythonHere device.
+
+```{code-cell}
+%there ai --help
+```
+
+```{code-cell}
+:tags: ["remove-output"]
+%%there ai
+Show Python version, Kivy platform, current working directory,
+and root widget class.
+```
+
+Add an optional prompt section for one request:
+
+```{code-cell}
+:tags: ["remove-output"]
+%%there ai --prompts midi
+Build a small MIDI note test UI with play, stop, and status controls.
+```
+
+Generate a replacement for the last executed Python `%%there` cell:
+
+```{code-cell}
+:tags: ["remove-output"]
+%%there ai --fix
+Button was not imported.
 ```

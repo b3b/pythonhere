@@ -37,14 +37,15 @@ requirements =
              # herethere dependencies
              asyncssh==2.23.0,
              python-dotenv==1.2.2,
-             herethere==0.2.1,
+             herethere==0.2.3,
              # asyncssh dependencies
              cryptography,
              typing_extensions,
              # additional packages
              pyjnius==1.7.0,
-             plyer==2.1.0,
-             able_recipe,
+             # Plyer PyPI version is outdated, so pin a newer GitHub commit.
+             git+https://github.com/kivy/plyer.git@f8c4e24c7e224360fd963939a7ea1814541a9456#egg=plyer,
+             able_recipe==1.0.17,
              midistream==0.3.1,
              # Pillow is a recipe, not a package
              Pillow,

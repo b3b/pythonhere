@@ -99,6 +99,7 @@ To build with `Buildozer <https://github.com/kivy/buildozer>`_, run in the sourc
 Related resources
 -----------------
 
-* `Kivy Remote Shell <https://github.com/kivy/kivy-remote-shell>`_ : Remote SSH+Python interactive shell application
 * `herethere <https://github.com/b3b/herethere>`_ : Library for interactive code execution, based on AsyncSSH
 * `AsyncSSH <https://github.com/ronf/asyncssh>`_ : Asynchronous SSH for Python
+* `Buildozer <https://github.com/kivy/buildozer>`_ : Tool used to build the Android APK.
+* `python-for-android <https://github.com/kivy/python-for-android>`_ : Build toolchain used by Buildozer to package Python applications for Android.

@@ -25,7 +25,7 @@ jupyter:
 #:import ew kivy.uix.effectwidget
 
 <Dancer@Button>:
-    moves: ("\(-_- )\\", "/( -_-)/")
+    moves: ("\\(-_- )\\", "/( -_-)/")
     font_size: 100
     seq: 0
     text: self.moves[int(self.seq)]
@@ -77,5 +77,5 @@ RootLayout:
 ```
 
 ```python
-%there -d 1 screenshot -w 200
+%there -d 1 screenshot -w 250
 ```

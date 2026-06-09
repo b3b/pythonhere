@@ -12,11 +12,27 @@ jupyter:
     name: python3
 ---
 
+# Usage examples
+
 ## Before run
 
-These examples use connection settings from the **there.env** file.
+Examples in this section use connection settings from the **there.env** file.
 
-**there.env** should be filled with values from the PythonHere app Settings section.
+**there.env** should be filled with values from the *PythonHere* app Settings section:
+
+```text
+# PythonHere device IP address
+THERE_HOST=127.0.0.1
+
+# Port, as set in PythonHere app Settings section
+THERE_PORT=8022
+
+# Username, as set in PythonHere app Settings section
+THERE_USERNAME=here
+
+# Password, as set in PythonHere app Settings section
+THERE_PASSWORD=xxx
+```
 
 ## When using with Docker 
 

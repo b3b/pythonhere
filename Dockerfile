@@ -30,7 +30,7 @@ RUN cd /home/${NB_USER}/src && \
 EOF
 
 RUN cd /home/${NB_USER}/examples && \
-    jupytext --to ipynb *.md && \
-    rm *.md && \
+    find . -name "*.md" -exec jupytext --to ipynb {} + && \
+    find . -name "*.md" -delete && \
     rm -rf /home/${NB_USER}/.cache && \
     rm -rf /home/${NB_USER}/src

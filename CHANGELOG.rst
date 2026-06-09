@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.2.2
+-----
+
+This release adds ``%%there ai`` for AI-assisted PythonHere code generation.
+From a notebook, describe what you want to build, modify, or inspect on the
+connected device, and PythonHere generates a reviewable ``%%there`` cell for
+the live Android/Kivy app.
+
+* Added PythonHere runtime context for ``herethere`` AI cell generation
+* Registered the PythonHere AI prompt stack with ``%load_ext pythonhere``
+
 0.2.1
 -----
 
