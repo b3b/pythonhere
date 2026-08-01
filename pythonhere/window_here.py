@@ -1,6 +1,5 @@
 """Utilities for working with Kivy window."""
 
-import os
 import time
 from base64 import b64encode
 from pathlib import Path
@@ -53,13 +52,29 @@ def load_kv_string(code: str, clear_style: bool):
         app.update_ssh_server_namespace({"root": root})
 
 
-def encoded_screenshot() -> str:
-    """Return base64 encoded displayed image."""
+def save_screenshot(path: str | Path, widget=None) -> str:
+    """Save a widget, or the visible window content, as a PNG."""
     from kivy.core.window import Window  # pylint: disable=import-outside-toplevel
 
-    path = str(Path(f"screenshot_{time.time()}.png").resolve())
-    Window.children[0].export_to_png(path)
-    with open(path, "rb") as png_file:
-        data = b64encode(png_file.read()).decode()
-    os.remove(path)
-    return data
+    if widget is None:
+        if not Window.children:
+            raise RuntimeError("PythonHere has no visible content to capture")
+        widget = Window.children[0]
+
+    destination = Path(path).expanduser().resolve()
+    if not destination.parent.is_dir():
+        raise FileNotFoundError(
+            f"Screenshot directory does not exist: {destination.parent}"
+        )
+    widget.export_to_png(str(destination))
+    return str(destination)
+
+
+def encoded_screenshot(widget=None) -> str:
+    """Return base64 encoded displayed image."""
+    path = Path(f"screenshot_{time.time()}.png").resolve()
+    try:
+        save_screenshot(path, widget=widget)
+        return b64encode(path.read_bytes()).decode()
+    finally:
+        path.unlink(missing_ok=True)

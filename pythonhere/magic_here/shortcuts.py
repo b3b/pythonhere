@@ -16,12 +16,12 @@ load_kv_string(r'''{code} ''', clear_style={clear_style})
 
 SCREENSHOT_COMMAND_TEMPLATE = """
 import sys
-from window_here import encoded_screenshot
+from tools_here import encoded_screenshot
 sys.stderr.write(encoded_screenshot())
 """
 
 PIN_COMMAND_TEMPLATE = """
-from android_here import pin_shortcut
+from tools_here import pin_shortcut
 pin_shortcut(script="{script}", label="{label}")
 """
 
