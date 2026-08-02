@@ -2,9 +2,12 @@
 
 import math
 import threading
+from concurrent.futures import Future
+from concurrent.futures import TimeoutError as FutureTimeoutError
 from pathlib import Path
 from typing import Any
 
+MAIN_THREAD_BRIDGE_TIMEOUT = 10.0
 DEFAULT_UI_SNAPSHOT_DEPTH = 6
 DEFAULT_UI_SNAPSHOT_WIDGETS = 200
 MAX_UI_SNAPSHOT_CLASS = 120
@@ -13,9 +16,83 @@ MAX_UI_SNAPSHOT_WIDGETS = 500
 MAX_UI_SNAPSHOT_TEXT = 240
 
 
-def _require_main_thread() -> None:
-    if threading.current_thread() is not threading.main_thread():
-        raise RuntimeError("This PythonHere tool must run on Kivy's main thread")
+class MainThreadBridgeError(RuntimeError):
+    """Kivy could not execute a requested main-thread operation."""
+
+
+class MainThreadTimeoutError(MainThreadBridgeError):
+    """Kivy did not execute a requested operation before its deadline."""
+
+
+def _clock_boundary():
+    """Return the Kivy Clock objects used by the worker-thread bridge."""
+    from kivy.clock import Clock, ClockNotRunningError
+
+    return Clock, ClockNotRunningError
+
+
+def _run_on_main_thread(function, /, *args, _timeout=None, **kwargs):
+    """Run ``function`` on Kivy's thread and synchronously return its result."""
+    if threading.current_thread() is threading.main_thread():
+        return function(*args, **kwargs)
+
+    timeout = MAIN_THREAD_BRIDGE_TIMEOUT if _timeout is None else _timeout
+    completion = Future()
+
+    def execute(_delta_time):
+        if not completion.set_running_or_notify_cancel():
+            return
+        try:
+            result = function(*args, **kwargs)
+        except BaseException as exc:  # Ensure every invocation releases its waiter.
+            completion.set_exception(exc)
+        else:
+            completion.set_result(result)
+
+    def clock_ended(_event):
+        if completion.set_running_or_notify_cancel():
+            completion.set_exception(
+                MainThreadBridgeError(
+                    "Kivy's Clock stopped before PythonHere could run the "
+                    "requested main-thread operation"
+                )
+            )
+
+    clock, clock_not_running_error = _clock_boundary()
+    try:
+        event = clock.create_lifecycle_aware_trigger(
+            execute,
+            clock_ended,
+            timeout=0,
+            release_ref=False,
+        )
+        event()
+    except clock_not_running_error as exc:
+        raise MainThreadBridgeError(
+            "Kivy's Clock is not running; PythonHere cannot run the requested "
+            "main-thread operation"
+        ) from exc
+
+    try:
+        return completion.result(timeout=timeout)
+    except FutureTimeoutError:
+        # An implementation may itself raise TimeoutError. Preserve it when it
+        # completed before the bridge deadline instead of mislabelling it.
+        if completion.done():
+            return completion.result()
+
+        cancelled_before_start = completion.cancel()
+        event.cancel()
+        if cancelled_before_start:
+            detail = "The operation was cancelled before it started."
+        elif completion.done():
+            return completion.result()
+        else:
+            detail = "The operation had started and may still complete."
+        raise MainThreadTimeoutError(
+            f"Kivy did not complete the requested main-thread operation within "
+            f"{timeout:g} seconds. {detail} Do not blindly retry mutations."
+        ) from None
 
 
 def _current_root(widget=None):
@@ -88,14 +165,13 @@ def _snapshot_widget(current, path):
     return item, children
 
 
-def snapshot_ui(
+def _snapshot_ui(
     widget=None,
     *,
     max_depth: int = DEFAULT_UI_SNAPSHOT_DEPTH,
     max_widgets: int = DEFAULT_UI_SNAPSHOT_WIDGETS,
 ) -> dict[str, Any]:
-    """Return observable widget facts; call only on Kivy's main thread."""
-    _require_main_thread()
+    """Return observable widget facts from Kivy's main thread."""
     max_depth = _snapshot_limit(
         "max_depth",
         max_depth,
@@ -131,9 +207,22 @@ def snapshot_ui(
     }
 
 
-def runtime_info(app=None, root=None) -> dict[str, Any]:
-    """Return live Kivy runtime information; call only on its main thread."""
-    _require_main_thread()
+def snapshot_ui(
+    widget=None,
+    *,
+    max_depth: int = DEFAULT_UI_SNAPSHOT_DEPTH,
+    max_widgets: int = DEFAULT_UI_SNAPSHOT_WIDGETS,
+) -> dict[str, Any]:
+    """Return observable widget facts, marshaling worker calls to Kivy."""
+    return _run_on_main_thread(
+        _snapshot_ui,
+        widget,
+        max_depth=max_depth,
+        max_widgets=max_widgets,
+    )
+
+
+def _runtime_info(app=None, root=None) -> dict[str, Any]:
     import kivy
     from kivy.app import App
     from kivy.core.window import Window
@@ -151,12 +240,15 @@ def runtime_info(app=None, root=None) -> dict[str, Any]:
     }
 
 
-def save_screenshot(
+def runtime_info(app=None, root=None) -> dict[str, Any]:
+    """Return live Kivy runtime information, marshaling worker calls."""
+    return _run_on_main_thread(_runtime_info, app, root)
+
+
+def _save_screenshot(
     path: str | Path = "pythonhere-screenshot.png",
     widget=None,
 ) -> str:
-    """Save visible content as PNG; call only on Kivy's main thread."""
-    _require_main_thread()
     from kivy.app import App
     from window_here import save_screenshot as save_window_screenshot
 
@@ -168,25 +260,41 @@ def save_screenshot(
     return save_window_screenshot(destination, widget=widget)
 
 
-def encoded_screenshot(widget=None) -> str:
-    """Encode visible content as PNG; call only on Kivy's main thread."""
-    _require_main_thread()
+def save_screenshot(
+    path: str | Path = "pythonhere-screenshot.png",
+    widget=None,
+) -> str:
+    """Save visible content as PNG, marshaling worker calls to Kivy."""
+    return _run_on_main_thread(_save_screenshot, path, widget)
+
+
+def _encoded_screenshot(widget=None) -> str:
     from window_here import encoded_screenshot as encode_window_screenshot
 
     return encode_window_screenshot(widget=widget)
 
 
-def pin_shortcut(script: str, label: str | None = None) -> None:
-    """Request an Android launcher shortcut for a PythonHere script."""
-    _require_main_thread()
+def encoded_screenshot(widget=None) -> str:
+    """Encode visible content as PNG, marshaling worker calls to Kivy."""
+    return _run_on_main_thread(_encoded_screenshot, widget)
+
+
+def _pin_shortcut(script: str, label: str | None = None) -> None:
     from android_here import pin_shortcut as pin_android_shortcut
 
     shortcut_label = label or script.rstrip("/").rsplit("/", 1)[-1]
     pin_android_shortcut(script=script, label=shortcut_label)
 
 
+def pin_shortcut(script: str, label: str | None = None) -> None:
+    """Request an Android shortcut, marshaling worker calls to Kivy."""
+    return _run_on_main_thread(_pin_shortcut, script, label)
+
+
 __all__ = (
     "encoded_screenshot",
+    "MainThreadBridgeError",
+    "MainThreadTimeoutError",
     "pin_shortcut",
     "runtime_info",
     "save_screenshot",

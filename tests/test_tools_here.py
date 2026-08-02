@@ -3,6 +3,7 @@ import threading
 from pathlib import Path
 
 import pytest
+import tools_here
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -13,6 +14,73 @@ from tools_here import (
     save_screenshot,
     snapshot_ui,
 )
+
+
+class FakeClockNotRunningError(RuntimeError):
+    pass
+
+
+class FakeClockEvent:
+    def __init__(self, clock, callback, clock_ended_callback):
+        self.clock = clock
+        self.callback = callback
+        self.clock_ended_callback = clock_ended_callback
+        self.cancelled = False
+
+    def __call__(self):
+        if not self.clock.running:
+            raise FakeClockNotRunningError
+        with self.clock.condition:
+            self.clock.events.append(self)
+            self.clock.condition.notify_all()
+
+    def cancel(self):
+        self.cancelled = True
+
+    def run(self):
+        if not self.cancelled:
+            self.callback(0)
+
+    def end_clock(self):
+        if not self.cancelled:
+            self.clock_ended_callback(self)
+
+
+class FakeClock:
+    def __init__(self, *, running=True):
+        self.running = running
+        self.events = []
+        self.condition = threading.Condition()
+
+    def create_lifecycle_aware_trigger(
+        self,
+        callback,
+        clock_ended_callback,
+        *,
+        timeout,
+        release_ref,
+    ):
+        assert timeout == 0
+        assert release_ref is False
+        return FakeClockEvent(self, callback, clock_ended_callback)
+
+    def wait_for_events(self, count):
+        with self.condition:
+            assert self.condition.wait_for(lambda: len(self.events) >= count, 1)
+
+
+def invoke_in_worker(call):
+    outcome = {}
+
+    def invoke():
+        try:
+            outcome["result"] = call()
+        except BaseException as exc:
+            outcome["error"] = exc
+
+    thread = threading.Thread(target=invoke)
+    thread.start()
+    return thread, outcome
 
 
 def test_snapshot_ui_returns_flat_observable_widget_facts(app_instance):
@@ -136,32 +204,183 @@ def test_snapshot_ui_normalizes_nonfinite_geometry(app_instance):
     json.dumps(result, allow_nan=False)
 
 
+def test_main_thread_bridge_executes_directly_without_clock(mocker):
+    clock_boundary = mocker.patch("tools_here._clock_boundary")
+
+    result = tools_here._run_on_main_thread(lambda value: value + 1, 2)
+
+    assert result == 3
+    clock_boundary.assert_not_called()
+
+
+def test_main_thread_bridge_returns_worker_result_from_main_thread(mocker):
+    clock = FakeClock()
+    mocker.patch(
+        "tools_here._clock_boundary",
+        return_value=(clock, FakeClockNotRunningError),
+    )
+    worker, outcome = invoke_in_worker(
+        lambda: tools_here._run_on_main_thread(
+            lambda: ("value", threading.current_thread()),
+        )
+    )
+    clock.wait_for_events(1)
+
+    clock.events[0].run()
+    worker.join(1)
+
+    assert not worker.is_alive()
+    assert outcome == {"result": ("value", threading.main_thread())}
+
+
+def test_main_thread_bridge_propagates_implementation_exception(mocker):
+    clock = FakeClock()
+    mocker.patch(
+        "tools_here._clock_boundary",
+        return_value=(clock, FakeClockNotRunningError),
+    )
+    expected = ValueError("implementation failed")
+
+    def fail():
+        raise expected
+
+    worker, outcome = invoke_in_worker(lambda: tools_here._run_on_main_thread(fail))
+    clock.wait_for_events(1)
+    clock.events[0].run()
+    worker.join(1)
+
+    assert outcome == {"error": expected}
+
+
+def test_main_thread_bridge_reports_clock_stopping_before_callback(mocker):
+    clock = FakeClock()
+    mocker.patch(
+        "tools_here._clock_boundary",
+        return_value=(clock, FakeClockNotRunningError),
+    )
+    worker, outcome = invoke_in_worker(
+        lambda: tools_here._run_on_main_thread(lambda: None)
+    )
+    clock.wait_for_events(1)
+
+    clock.events[0].end_clock()
+    worker.join(1)
+
+    assert isinstance(outcome["error"], tools_here.MainThreadBridgeError)
+    assert "Clock stopped" in str(outcome["error"])
+
+
+def test_main_thread_bridge_reports_clock_already_stopped(mocker):
+    clock = FakeClock(running=False)
+    mocker.patch(
+        "tools_here._clock_boundary",
+        return_value=(clock, FakeClockNotRunningError),
+    )
+    worker, outcome = invoke_in_worker(
+        lambda: tools_here._run_on_main_thread(lambda: None)
+    )
+    worker.join(1)
+
+    assert isinstance(outcome["error"], tools_here.MainThreadBridgeError)
+    assert "Clock is not running" in str(outcome["error"])
+
+
+def test_main_thread_bridge_has_bounded_wait_and_cancels_pending_event(mocker):
+    clock = FakeClock()
+    mocker.patch(
+        "tools_here._clock_boundary",
+        return_value=(clock, FakeClockNotRunningError),
+    )
+    worker, outcome = invoke_in_worker(
+        lambda: tools_here._run_on_main_thread(lambda: None, _timeout=0.01)
+    )
+    clock.wait_for_events(1)
+    worker.join(1)
+
+    assert not worker.is_alive()
+    assert isinstance(outcome["error"], tools_here.MainThreadTimeoutError)
+    assert "cancelled before it started" in str(outcome["error"])
+    assert clock.events[0].cancelled is True
+
+
+def test_main_thread_bridge_reports_when_timed_out_call_already_started(mocker):
+    clock = FakeClock()
+    mocker.patch(
+        "tools_here._clock_boundary",
+        return_value=(clock, FakeClockNotRunningError),
+    )
+    implementation_started = threading.Event()
+    release_implementation = threading.Event()
+
+    def stalled_operation():
+        implementation_started.set()
+        release_implementation.wait(1)
+
+    worker, outcome = invoke_in_worker(
+        lambda: tools_here._run_on_main_thread(stalled_operation, _timeout=0.01)
+    )
+    clock.wait_for_events(1)
+    callback_thread = threading.Thread(target=clock.events[0].run)
+    callback_thread.start()
+    assert implementation_started.wait(1)
+    worker.join(1)
+
+    assert not worker.is_alive()
+    assert isinstance(outcome["error"], tools_here.MainThreadTimeoutError)
+    assert "started and may still complete" in str(outcome["error"])
+
+    release_implementation.set()
+    callback_thread.join(1)
+
+
+def test_main_thread_bridge_keeps_concurrent_call_state_independent(mocker):
+    clock = FakeClock()
+    mocker.patch(
+        "tools_here._clock_boundary",
+        return_value=(clock, FakeClockNotRunningError),
+    )
+
+    def operation(value):
+        if value == "bad":
+            raise ValueError(value)
+        return value
+
+    first, first_outcome = invoke_in_worker(
+        lambda: tools_here._run_on_main_thread(operation, "good")
+    )
+    second, second_outcome = invoke_in_worker(
+        lambda: tools_here._run_on_main_thread(operation, "bad")
+    )
+    clock.wait_for_events(2)
+    for event in clock.events:
+        event.run()
+    first.join(1)
+    second.join(1)
+
+    assert first_outcome == {"result": "good"}
+    assert isinstance(second_outcome["error"], ValueError)
+    assert str(second_outcome["error"]) == "bad"
+
+
 @pytest.mark.parametrize(
-    "call",
+    ("helper", "arguments"),
     [
-        lambda app, output: snapshot_ui(app.root),
-        lambda app, output: runtime_info(app, app.root),
-        lambda app, output: save_screenshot(output, app.root),
-        lambda app, output: encoded_screenshot(app.root),
-        lambda app, output: pin_shortcut("scripts/demo.py"),
+        (snapshot_ui, ()),
+        (runtime_info, ()),
+        (save_screenshot, ()),
+        (encoded_screenshot, ()),
+        (pin_shortcut, ("scripts/demo.py",)),
     ],
 )
-def test_kivy_tools_reject_worker_threads(tmp_path, app_instance, call):
-    errors = []
+def test_each_public_kivy_helper_uses_main_thread_bridge(
+    mocker,
+    helper,
+    arguments,
+):
+    bridge = mocker.patch("tools_here._run_on_main_thread", return_value="result")
 
-    def invoke():
-        try:
-            call(app_instance, tmp_path / "screen.png")
-        except Exception as exc:
-            errors.append(exc)
-
-    thread = threading.Thread(target=invoke)
-    thread.start()
-    thread.join()
-
-    assert len(errors) == 1
-    assert isinstance(errors[0], RuntimeError)
-    assert str(errors[0]) == "This PythonHere tool must run on Kivy's main thread"
+    assert helper(*arguments) == "result"
+    bridge.assert_called_once()
 
 
 def test_runtime_info_is_json_compatible(app_instance):

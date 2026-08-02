@@ -11,6 +11,7 @@ from herethere.everywhere import ConnectionConfig
 from herethere.everywhere.loop import run_sync
 from herethere.there.client import Client
 from herethere.there.commands import ContextObject, there_group
+from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.window import Window
 from main import PythonHereApp, run_ssh_server
@@ -48,6 +49,12 @@ async def app_instance(mocker, capfd, app_config, tmpdir):
     os.chdir(Path(__file__).parents[1] / "pythonhere")
     mocker.patch("main.App.user_data_dir", tmpdir)
     Window.size = (800, 600)
+    if Clock.has_ended:
+        # Kivy's global Clock lifecycle is intentionally one-shot in a real
+        # process. Tests create multiple complete app lifecycles in one process,
+        # so make this fixture represent a fresh process for lifecycle-aware
+        # events as well.
+        Clock.has_ended = False
 
     app = PythonHereApp()
     app.init_asyncio_state()

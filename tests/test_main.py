@@ -111,6 +111,53 @@ async def test_root_object_is_in_context(capfd, app_instance, there):
 
 
 @pytest.mark.asyncio
+async def test_background_snapshot_traverses_widgets_on_main_thread(
+    app_instance,
+    there,
+):
+    await there.runcode(
+        "\n".join(
+            (
+                "import threading, tools_here",
+                "tools_here._test_snapshot_widget = tools_here._snapshot_widget",
+                "def _track_snapshot_thread(current, path):",
+                "    tools_here._test_snapshot_thread = "
+                "threading.current_thread().ident",
+                "    return tools_here._test_snapshot_widget(current, path)",
+                "tools_here._snapshot_widget = _track_snapshot_thread",
+            )
+        )
+    )
+    try:
+        if hasattr(there, "get_background"):
+            snapshot = await there.get_background("tools_here.snapshot_ui(root)")
+            runtime = await there.get_background("tools_here.runtime_info(app, root)")
+        else:
+            # Herethere 0.3.0 has background execution but predates its
+            # background value command. Exercise the same worker bridge while
+            # keeping this integration test compatible with that release.
+            await there.runcode_background(
+                "tools_here._test_background_results = "
+                "(tools_here.snapshot_ui(root), tools_here.runtime_info(app, root))"
+            )
+            snapshot, runtime = await there.get("tools_here._test_background_results")
+        ran_on_main_thread = await there.get(
+            "tools_here._test_snapshot_thread == "
+            "__import__('threading').main_thread().ident"
+        )
+    finally:
+        await there.runcode(
+            "tools_here._snapshot_widget = tools_here._test_snapshot_widget"
+        )
+
+    assert snapshot["widget_count"] >= 1
+    assert isinstance(snapshot["widgets"], list)
+    assert runtime["app_class"] == type(app_instance).__name__
+    assert runtime["root_class"] == type(app_instance.root).__name__
+    assert ran_on_main_thread is True
+
+
+@pytest.mark.asyncio
 async def test_settings_opened_from_action_bar(capfd, app_instance, there):
     assert app_instance.root.ids.screen_manager.current != "settings"
     await there.runcode("root.ids.open_settings_action.dispatch('on_release')")
