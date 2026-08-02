@@ -1,5 +1,7 @@
 """Reusable tools for the live PythonHere runtime."""
 
+import copy
+import json
 import math
 import threading
 from concurrent.futures import Future
@@ -12,6 +14,7 @@ DEFAULT_UI_SNAPSHOT_DEPTH = 6
 DEFAULT_UI_SNAPSHOT_WIDGETS = 200
 MAX_UI_SNAPSHOT_CLASS = 120
 MAX_UI_SNAPSHOT_DEPTH = 48
+MAX_UI_SNAPSHOT_ERROR = 240
 MAX_UI_SNAPSHOT_WIDGETS = 500
 MAX_UI_SNAPSHOT_TEXT = 240
 
@@ -138,6 +141,7 @@ def _optional_text(widget):
 def _snapshot_widget(current, path):
     children = list(reversed(getattr(current, "children", ())))
     text, text_unavailable = _optional_text(current)
+    text_length = len(text) if text is not None else None
     text_truncated = bool(text is not None and len(text) > MAX_UI_SNAPSHOT_TEXT)
     if text_truncated:
         text = text[: MAX_UI_SNAPSHOT_TEXT - 3] + "..."
@@ -160,9 +164,50 @@ def _snapshot_widget(current, path):
         item["class_truncated"] = True
     if text_unavailable:
         item["text_unavailable"] = True
+    if text_length is not None:
+        item["text_length"] = text_length
     if text_truncated:
         item["text_truncated"] = True
     return item, children
+
+
+def _compact_inspection_error(exc):
+    error_type = type(exc).__name__
+    if len(error_type) > MAX_UI_SNAPSHOT_CLASS:
+        error_type = error_type[: MAX_UI_SNAPSHOT_CLASS - 3] + "..."
+    try:
+        message = str(exc)
+    except Exception:
+        message = "<error message unavailable>"
+    if len(message) > MAX_UI_SNAPSHOT_ERROR:
+        message = message[: MAX_UI_SNAPSHOT_ERROR - 3] + "..."
+    return {"type": error_type, "message": message}
+
+
+def _customize_snapshot_widget(current, default_item, callback):
+    if callback is None:
+        return default_item
+
+    callback_item = copy.deepcopy(default_item)
+    try:
+        item = callback(current, callback_item)
+    except Exception as exc:
+        default_item["inspection_error"] = _compact_inspection_error(exc)
+        return default_item
+
+    if item is None:
+        return None
+    if not isinstance(item, dict):
+        exc = TypeError("widget_record_callback must return a dictionary or None")
+        default_item["inspection_error"] = _compact_inspection_error(exc)
+        return default_item
+
+    try:
+        json.dumps(item, allow_nan=False)
+    except Exception as exc:
+        default_item["inspection_error"] = _compact_inspection_error(exc)
+        return default_item
+    return item
 
 
 def _snapshot_ui(
@@ -170,6 +215,7 @@ def _snapshot_ui(
     *,
     max_depth: int = DEFAULT_UI_SNAPSHOT_DEPTH,
     max_widgets: int = DEFAULT_UI_SNAPSHOT_WIDGETS,
+    widget_record_callback=None,
 ) -> dict[str, Any]:
     """Return observable widget facts from Kivy's main thread."""
     max_depth = _snapshot_limit(
@@ -184,15 +230,24 @@ def _snapshot_ui(
         1,
         MAX_UI_SNAPSHOT_WIDGETS,
     )
-    root = _current_root(widget)
+    if widget_record_callback is not None and not callable(widget_record_callback):
+        raise TypeError("widget_record_callback must be callable or None")
     widgets = []
-    pending = [("0", root, 0)]
+    pending = [("0", _current_root(widget), 0)]
     omitted_descendants = False
+    visited_widgets = 0
 
-    while pending and len(widgets) < max_widgets:
+    while pending and visited_widgets < max_widgets:
         path, current, depth = pending.pop()
-        item, children = _snapshot_widget(current, path)
-        widgets.append(item)
+        visited_widgets += 1
+        default_item, children = _snapshot_widget(current, path)
+        item = _customize_snapshot_widget(
+            current,
+            default_item,
+            widget_record_callback,
+        )
+        if item is not None:
+            widgets.append(item)
 
         if depth >= max_depth:
             omitted_descendants = omitted_descendants or bool(children)
@@ -212,6 +267,7 @@ def snapshot_ui(
     *,
     max_depth: int = DEFAULT_UI_SNAPSHOT_DEPTH,
     max_widgets: int = DEFAULT_UI_SNAPSHOT_WIDGETS,
+    widget_record_callback=None,
 ) -> dict[str, Any]:
     """Return observable widget facts, marshaling worker calls to Kivy."""
     return _run_on_main_thread(
@@ -219,6 +275,7 @@ def snapshot_ui(
         widget,
         max_depth=max_depth,
         max_widgets=max_widgets,
+        widget_record_callback=widget_record_callback,
     )
 
 
