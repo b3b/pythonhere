@@ -75,6 +75,9 @@ version = { attr = "pythonhere.version_here.__version__" }
 
 [tool.setuptools.package-data]
 pythonhere = [
+    ".agents/skills/pythonhere/SKILL.md",
+    ".agents/skills/pythonhere/agents/openai.yaml",
+    ".agents/skills/pythonhere/references/*.md",
     "*.kv",
     "data/logo/*.png",
     "magic_here/prompts/*.md",

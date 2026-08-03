@@ -1,0 +1,4 @@
+interface:
+  display_name: "Use PythonHere"
+  short_description: "Build and debug live Android Kivy apps"
+  default_prompt: "Use $pythonhere to build or debug this live Android/Kivy app through the there CLI."
