@@ -31,7 +31,7 @@ async def run_ssh_server(app):
             config = ServerConfig(
                 host="",
                 sftp_root=app.upload_dir,
-                key_path=Path("./key.rsa").resolve(),
+                key_path=Path("./ssh_host_key").resolve(),
                 **app.get_pythonhere_config(),
             )
             server = await start_server(

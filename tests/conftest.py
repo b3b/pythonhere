@@ -47,6 +47,9 @@ def app_config(unused_tcp_port):
 async def app_instance(mocker, capfd, app_config, tmpdir):
     original_cwd = Path.cwd()
     os.chdir(Path(__file__).parents[1] / "pythonhere")
+    key_path = Path(tmpdir) / "ssh_host_key"
+    server_path = mocker.patch("server_here.Path")
+    server_path.return_value.resolve.return_value = key_path
     mocker.patch("main.App.user_data_dir", tmpdir)
     Window.size = (800, 600)
     if Clock.has_ended:

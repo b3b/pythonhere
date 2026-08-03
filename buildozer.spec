@@ -37,7 +37,7 @@ requirements =
              # herethere dependencies
              asyncssh==2.23.0,
              python-dotenv==1.2.2,
-             herethere==0.2.3,
+             herethere==0.3.1,
              # asyncssh dependencies
              cryptography,
              typing_extensions,

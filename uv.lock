@@ -613,16 +613,16 @@ wheels = [
 
 [[package]]
 name = "herethere"
-version = "0.2.3"
+version = "0.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asyncssh", marker = "sys_platform == 'linux'" },
     { name = "click", marker = "sys_platform == 'linux'" },
     { name = "python-dotenv", marker = "sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c1/71/cbee79cf68f61555e01ceb8df420364a693f20a726b2e63eaa1b27c23d88/herethere-0.2.3.tar.gz", hash = "sha256:a7646562ec62a624a50a531ce0bf6b7943223f8a6c27e2e1a0a346070fefedd0", size = 35675, upload-time = "2026-06-04T11:56:39.463Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/65/39/7649caa906504bc73931d4e9d08f992c411f30ecc2c2f90ffe0546177b34/herethere-0.3.1.tar.gz", hash = "sha256:8ea7a682a52cc5b99fdefa70a0f712c16691a633f72f43530c10e979d6c37ceb", size = 60710, upload-time = "2026-08-03T07:06:24.987Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9d/2e/b33b11cda79f6043caa2329a6a34a5b9ecc563fc071f179a714e0f49abdc/herethere-0.2.3-py3-none-any.whl", hash = "sha256:f12edcf4ff6659da91686dea038ac35da018831c51b65a9f9aaf9d953e831ed2", size = 37090, upload-time = "2026-06-04T11:56:38.374Z" },
+    { url = "https://files.pythonhosted.org/packages/14/dd/bd60a211ceedad92f39a3f0edd3cf29de51afaf0032c33ad7a7cbc4d9146/herethere-0.3.1-py3-none-any.whl", hash = "sha256:26c6638f38d0c03a785efcd607645ffaec4bca0de584d19d3ed55b64d1319c0f", size = 63230, upload-time = "2026-08-03T07:06:24.041Z" },
 ]
 
 [package.optional-dependencies]
@@ -1661,7 +1661,7 @@ docker = [
 
 [package.metadata]
 requires-dist = [
-    { name = "herethere", extras = ["magic"], specifier = ">=0.2.3" },
+    { name = "herethere", extras = ["magic"], specifier = ">=0.3.1" },
     { name = "ipython" },
     { name = "ipywidgets" },
     { name = "pillow" },
