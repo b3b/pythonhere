@@ -6,34 +6,44 @@ description: "Build, inspect, and debug PythonHere applications by executing Pyt
 # Operate PythonHere with `there`
 
 Treat the target as a live Android/Kivy application. Use the installed `there`
-CLI for transport and execution, and apply the `there-cli` skill for connection
-discovery, exact CLI syntax, JSON result handling, transfers, timeouts, and
-generic remote-execution safety.
+CLI for transport and execution. Consult the `there-cli` skill when the task
+needs connection discovery, unfamiliar or version-sensitive syntax, transfers,
+timeout or failure diagnosis, or its fuller remote-execution safety guidance.
+For routine `ping`, `get`, `logs`, or `run` calls whose invocation is already
+established, use the common workflow below without loading `there-cli` solely
+because it is the transport.
 
 ## Load the relevant runtime rules
 
-Read each relevant reference completely before composing or running target code:
+The common runtime contract and guardrails are in this file. Consult a reference
+only when the task needs its additional detail and that detail is not already
+available in the current context. Do not reopen a reference merely because the
+request mentions its topic. Read the applicable sections, or the complete file
+when the task depends on it broadly or requires its exact current contents.
 
-- Always read [kivy-runtime.md](references/kivy-runtime.md) for Kivy code or UI
-  changes.
-- Also read [kivy-kv.md](references/kivy-kv.md) when generating or modifying KV.
-- Read [android-runtime.md](references/android-runtime.md) for any Android code.
-- Read [jnius.md](references/jnius.md) when calling Java/Android APIs through
+- Consult [kivy-runtime.md](references/kivy-runtime.md) for nontrivial Kivy
+  runtime, lifecycle, threading, state, or UI-construction details beyond the
+  guardrails below. A simple property change does not require it.
+- Consult [kivy-kv.md](references/kivy-kv.md) for nontrivial KV generation or
+  modification details.
+- Consult [android-runtime.md](references/android-runtime.md) for Android
+  activity, service, context, or lifecycle details.
+- Consult [jnius.md](references/jnius.md) for Java/Android API calls through
   Pyjnius.
-- Read [android-permissions.md](references/android-permissions.md) when checking
-  or requesting permissions.
-- Read [android-packages.md](references/android-packages.md) when inspecting
-  installed apps or package metadata.
-- Read [android-media.md](references/android-media.md) for shared storage,
+- Consult [android-permissions.md](references/android-permissions.md) for
+  permission checks or requests.
+- Consult [android-packages.md](references/android-packages.md) for installed
+  applications or package metadata.
+- Consult [android-media.md](references/android-media.md) for shared storage,
   MediaStore, images, video, downloads, or galleries.
-- Read [plyer.md](references/plyer.md) for notifications, vibration, TTS,
+- Consult [plyer.md](references/plyer.md) for notifications, vibration, TTS,
   recording, camera, file selection, GPS, battery, or sensors.
-- Read [able.md](references/able.md) for Bluetooth Low Energy work.
-- Read [midi.md](references/midi.md) for MIDI or synthesizer work.
+- Consult [able.md](references/able.md) for Bluetooth Low Energy work.
+- Consult [midi.md](references/midi.md) for MIDI or synthesizer work.
 
-Load only the references needed by the request. Combine them when a feature
-crosses concerns; for example, an Android gallery UI requires Kivy runtime, KV,
-Android runtime, permissions, MediaStore, and possibly Pyjnius rules.
+Combine references when a feature genuinely needs details from several
+concerns; for example, an Android gallery may need permission, MediaStore, and
+Pyjnius guidance. Do not load every potentially related reference in advance.
 
 ## Use the shared runtime tools
 
