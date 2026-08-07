@@ -35,7 +35,7 @@ requirements =
              android,
              pygments==2.20.0,
              # herethere dependencies
-             asyncssh==2.23.0,
+             asyncssh==2.23.1,
              python-dotenv==1.2.2,
              herethere==0.3.1,
              # asyncssh dependencies
@@ -49,15 +49,16 @@ requirements =
              midistream==0.3.1,
              # Pillow is a recipe, not a package
              Pillow,
-             docutils==0.22.4,
+             docutils==0.23,
              requests==2.34.2,
              urllib3==2.7.0,
-             certifi==2026.4.22,
-             chardet==7.4.3,
-             idna==3.15,
+             certifi==2026.7.22,
+             chardet==5.2.0,
+             idna==3.18,
              # https://github.com/kivy/python-for-android/issues/3098
              filetype==1.2.0,
 
+             
 # android specific
 p4a.branch = v2026.05.09             
 android.api = 36

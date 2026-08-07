@@ -87,6 +87,15 @@ Commands to run locally::
    jupyter notebook
 
 
+Coding agents
+-------------
+
+PythonHere includes agent skills for working with the live app through the
+``there`` command-line interface. See `Coding agent skills
+<https://herethere.me/pythonhere/examples/coding-agents.html>`_ for skill setup
+and practical examples.
+
+
 Build Android app
 -----------------
 

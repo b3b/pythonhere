@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.3.0
+-----
+
+This release adds support for live development with coding agents.
+
+* Added the packaged ``pythonhere`` agent skill
+* Updated ``herethere`` to 0.3.1, adding the standalone ``there`` CLI
+  and bundled ``there-cli`` agent skill
+* Added runtime inspection tools with screenshots, customizable UI snapshots,
+  and worker-thread support
+* Switched SSH host keys to Ed25519
+
 0.2.2
 -----
 
