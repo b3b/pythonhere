@@ -66,9 +66,11 @@ They complement rather than restrict normal Python:
 These helpers may be called on Kivy's main thread or from a worker. Worker calls
 are transparently marshaled to Kivy's thread and block that worker until Kivy
 finishes the operation, normally on its next frame. Continue to prefer normal
-foreground `there get` and `there run` for quick UI operations. Background
-execution is useful when surrounding work would otherwise block the UI; it does
-not make other Kivy access thread-safe.
+foreground `there get` and `there run` for quick UI operations. Add `--worker`
+to `get` or `run` when surrounding slow or blocking work would otherwise block
+the UI. The CLI remains attached, waits for completion, and then returns the
+value or captured output. Worker execution does not make other Kivy access
+thread-safe.
 
 Do not call a worker-marshaled helper while Kivy's main thread is synchronously
 waiting for that same worker. Neither side can progress in that cross-thread
@@ -179,7 +181,9 @@ there --json run --code "from tools_here import pin_shortcut; pin_shortcut('demo
    - Keep callbacks non-blocking and marshal UI changes to the Kivy thread.
 4. For more than a short expression, create a local UTF-8 Python file and run it
    with `there --json run FILE`. Prefer a file over fragile shell quoting or a
-   long `--code` value. Keep within the installed CLI's input limit.
+   long `--code` value. Keep within the installed CLI's input limit. Add
+   `--worker` for slow or blocking code that should not occupy Kivy's main
+   thread.
 5. Make only the requested live-app mutation. Reuse existing state when
    practical and provide cleanup helpers for scheduled events, sensors,
    Bluetooth, MIDI, files, or other held resources.
@@ -221,6 +225,13 @@ Run a prepared UI change:
 
 ```console
 there --json run /tmp/pythonhere-ui.py
+```
+
+Run slow or blocking non-UI work without freezing Kivy, while waiting for its
+buffered output:
+
+```console
+there --json run --worker /tmp/pythonhere-long-task.py
 ```
 
 Verify a named status left by that code:

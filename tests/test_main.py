@@ -111,7 +111,7 @@ async def test_root_object_is_in_context(capfd, app_instance, there):
 
 
 @pytest.mark.asyncio
-async def test_background_snapshot_traverses_widgets_on_main_thread(
+async def test_worker_snapshot_traverses_widgets_on_main_thread(
     app_instance,
     there,
 ):
@@ -129,18 +129,8 @@ async def test_background_snapshot_traverses_widgets_on_main_thread(
         )
     )
     try:
-        if hasattr(there, "get_background"):
-            snapshot = await there.get_background("tools_here.snapshot_ui(root)")
-            runtime = await there.get_background("tools_here.runtime_info(app, root)")
-        else:
-            # Herethere 0.3.0 has background execution but predates its
-            # background value command. Exercise the same worker bridge while
-            # keeping this integration test compatible with that release.
-            await there.runcode_background(
-                "tools_here._test_background_results = "
-                "(tools_here.snapshot_ui(root), tools_here.runtime_info(app, root))"
-            )
-            snapshot, runtime = await there.get("tools_here._test_background_results")
+        snapshot = await there.get_worker("tools_here.snapshot_ui(root)")
+        runtime = await there.get_worker("tools_here.runtime_info(app, root)")
         ran_on_main_thread = await there.get(
             "tools_here._test_snapshot_thread == "
             "__import__('threading').main_thread().ident"

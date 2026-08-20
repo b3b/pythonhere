@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.3.1
+-----
+
+* Updated ``herethere`` to 0.3.2 and documented the new ``--worker`` option
+  for blocking or long-running operations in Jupyter and the CLI.
+
 0.3.0
 -----
 

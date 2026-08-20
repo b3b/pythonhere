@@ -29,20 +29,22 @@ there --json --config /path/to/there.env ping
 Options for the whole invocation, including `--json`, `--config`, `--timeout`,
 and `--max-output`, go before the command name.
 
-## Background execution
+## Worker execution
 
 By default, `run` and `get` execute on the application's main thread. Blocking
-or long-running work there can freeze the Kivy UI. Use `--background` to run
-such work in a worker thread:
+or long-running work there can freeze the Kivy UI. Use `--worker` to run such
+work in a worker thread:
 
 ```console
-there --json run --background long_task.py
-there --json get --background "task_done.wait(30)"
+there --json run --worker long_task.py
+there --json get --worker "task_done.wait(30)"
 ```
 
-The CLI remains attached and waits for the background operation to finish.
-Direct Kivy UI access must still run on Kivy's main thread. The `tools_here`
-helpers described below marshal their own Kivy operations to that thread.
+The CLI remains attached and waits for the worker operation to finish.
+`run --worker` replays captured output after the code finishes, and
+`get --worker` returns the resulting value. Direct Kivy UI access must still
+run on Kivy's main thread. The `tools_here` helpers described below marshal
+their own Kivy operations to that thread.
 
 ## Runtime helpers
 

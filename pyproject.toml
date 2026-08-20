@@ -22,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "herethere[magic]>=0.3.1",
+    "herethere[magic]>=0.3.2",
     "ipython",
     "ipywidgets",
     "Pillow",

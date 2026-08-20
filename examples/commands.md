@@ -72,6 +72,28 @@ Default action for *%there*, if command is not specified - execute python code.
 import this
 ```
 
+Python code normally runs on the PythonHere application's main thread. For a
+slow or blocking operation, use `--worker` so the UI stays responsive. The cell
+waits for completion and then displays the buffered output:
+
+```{code-cell} python
+:tags: ["skip-execution"]
+%%there --worker
+import time
+
+
+def perform_expensive_work():
+    """Simulate a blocking operation."""
+    time.sleep(1)
+    print("Work complete")
+
+
+perform_expensive_work()
+```
+
+Use `--background` instead when the notebook cell should return immediately
+while the code continues on a remote worker thread.
+
 ### get
 
 Evaluate a Python expression on the remote PythonHere side and return the value to the local notebook.
