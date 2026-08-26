@@ -13,6 +13,7 @@ package.domain = me.herethere
 source.dir = pythonhere
 source.include_exts = py,png,kv,rst,rsa,ttf,atlas
 p4a.local_recipes = ./recipes
+p4a.hook = p4a_hook.py
 
 # search the version information into the source code
 version.regex = __version__ = "(.*)"
@@ -57,13 +58,15 @@ requirements =
              idna==3.18,
              # https://github.com/kivy/python-for-android/issues/3098
              filetype==1.2.0,
+             litert_lm_api==0.16.0,
 
              
 # android specific
 p4a.branch = v2026.05.09             
 android.api = 36
-android.minapi = 22
+android.minapi = 24
 android.ndk = 28c
+android.ndk_api = 24
 android.accept_sdk_license = True
 android.release_artifact = apk
 
