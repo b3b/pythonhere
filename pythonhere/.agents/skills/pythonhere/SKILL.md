@@ -1,6 +1,6 @@
 ---
 name: pythonhere
-description: "Build, inspect, and debug PythonHere applications by executing Python through the `there` CLI in an already-running Kivy/Python-for-Android process. Use when a task targets a PythonHere device or `there.env` connection and involves live Kivy UI, KV language, Android APIs, Pyjnius, permissions, installed Android packages, media/files, Plyer device features, BLE with able, or MIDI with midistream."
+description: "Build, inspect, and debug PythonHere applications by executing Python through the `there` CLI in an already-running Kivy/Python-for-Android process. Use when a task targets a PythonHere device or `there.env` connection and involves live Kivy UI, KV language, Android APIs, Pyjnius, permissions, installed Android packages, media/files, Plyer device features, BLE with able, MIDI with midistream, or on-device AI with LiteRT-LM and `.litertlm` models."
 ---
 
 # Operate PythonHere with `there`
@@ -40,6 +40,8 @@ when the task depends on it broadly or requires its exact current contents.
   recording, camera, file selection, GPS, battery, or sensors.
 - Consult [able.md](references/able.md) for Bluetooth Low Energy work.
 - Consult [midi.md](references/midi.md) for MIDI or synthesizer work.
+- Consult [litert.md](references/litert.md) for PythonHere's ML model helpers
+  and LiteRT-LM usage.
 
 Combine references when a feature genuinely needs details from several
 concerns; for example, an Android gallery may need permission, MediaStore, and

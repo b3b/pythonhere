@@ -28,6 +28,12 @@ dependencies = [
     "Pillow",
 ]
 
+[project.optional-dependencies]
+litert = [
+    "litert-lm-api==0.16.0",
+    "requests",
+]
+
 [dependency-groups]
 dev = [
     { include-group = "docker" },
@@ -66,6 +72,7 @@ pythonpath = ["pythonhere"]
 [tool.setuptools]
 packages = [
     "pythonhere",
+    "pythonhere.ml_here",
     "pythonhere.magic_here",
     "pythonhere.ui_here",
 ]

@@ -19,9 +19,11 @@ REFERENCE_NAMES = {
     "jnius.md",
     "kivy-kv.md",
     "kivy-runtime.md",
+    "litert.md",
     "midi.md",
     "plyer.md",
 }
+RUNTIME_PROMPT_NAMES = REFERENCE_NAMES - {"litert.md"}
 
 
 def test_pythonhere_skill_files_exist():
@@ -67,7 +69,7 @@ def test_pythonhere_skill_is_included_in_wheel(tmp_path):
 
 
 def test_pythonhere_skill_references_cover_runtime_prompts():
-    for name in REFERENCE_NAMES:
+    for name in RUNTIME_PROMPT_NAMES:
         prompt = (PROMPTS_DIR / name).read_text()
         reference = (REFERENCES_DIR / name).read_text()
 

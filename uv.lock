@@ -1014,6 +1014,16 @@ wheels = [
 ]
 
 [[package]]
+name = "litert-lm-api"
+version = "0.16.0"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1d/d1/c444aa53f82b3b3850bafe6c087aabfc3e201ee01209f3e594cd8c2a476a/litert_lm_api-0.16.0-py3-none-android_23_arm64_v8a.whl", hash = "sha256:d07c80e415f08e71aa6a0c51b6db602a11e828591e2f36501340fdd35292b62a", size = 13804850, upload-time = "2026-08-11T18:00:27.522Z" },
+    { url = "https://files.pythonhosted.org/packages/3a/07/fa43be00a7907dd0f9f2cfbcc9b1305198c1be6e5ef33b2604a622437915/litert_lm_api-0.16.0-py3-none-manylinux_2_27_aarch64.whl", hash = "sha256:5eb8c9faa5727730239591f8c912261ec7705512d5f30ec674586bc0005f2b00", size = 46085754, upload-time = "2026-08-11T18:00:40.22Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/80/494be9edb8b851ae4a7b2065c0133426beb3608fa39f9454a0f823db8c76/litert_lm_api-0.16.0-py3-none-manylinux_2_27_x86_64.whl", hash = "sha256:a5d58ff8e1c14057d6a8c1f0333372bc685361e6311ea87bfa49fc131cb00a95", size = 46835531, upload-time = "2026-08-11T18:00:46.745Z" },
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "4.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1633,6 +1643,12 @@ dependencies = [
     { name = "pillow", marker = "sys_platform == 'linux'" },
 ]
 
+[package.optional-dependencies]
+litert = [
+    { name = "litert-lm-api", marker = "sys_platform == 'linux'" },
+    { name = "requests", marker = "sys_platform == 'linux'" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "build", marker = "sys_platform == 'linux'" },
@@ -1664,8 +1680,11 @@ requires-dist = [
     { name = "herethere", extras = ["magic"], specifier = ">=0.3.2" },
     { name = "ipython" },
     { name = "ipywidgets" },
+    { name = "litert-lm-api", marker = "extra == 'litert'", specifier = "==0.16.0" },
     { name = "pillow" },
+    { name = "requests", marker = "extra == 'litert'" },
 ]
+provides-extras = ["litert"]
 
 [package.metadata.requires-dev]
 dev = [
