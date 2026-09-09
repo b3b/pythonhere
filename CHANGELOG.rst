@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.4.0
+-----
+
+This release adds support for running local AI models directly on Android
+with Google's LiteRT LM.
+
+* Added LiteRT LM support for on-device language and multimodal models
+* Added ``ml_here`` helpers for downloading and managing models from Hugging Face
+* Added LiteRT LM usage guidance to the packaged ``pythonhere`` agent skill
+
 0.3.1
 -----
 
