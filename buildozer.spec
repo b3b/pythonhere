@@ -58,6 +58,7 @@ requirements =
              idna==3.18,
              # https://github.com/kivy/python-for-android/issues/3098
              filetype==1.2.0,
+             persist-queue==1.1.0,
              litert_lm_api==0.16.0,
 
              

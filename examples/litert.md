@@ -19,7 +19,7 @@ Android app, so `.litertlm` models can run directly on the device. After a
 model has been downloaded, inference does not require a network connection.
 
 PythonHere also provides
-[model helpers](https://github.com/b3b/pythonhere/tree/main/pythonhere/ml_here)
+[model helpers](https://github.com/b3b/pythonhere/tree/master/pythonhere/ml_here)
 for managing model storage and downloading model files from Hugging Face.
 This example covers every public helper, then loads a small language model and
 generates text with LiteRT-LM. Refer to the LiteRT-LM documentation for its

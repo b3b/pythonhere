@@ -1347,6 +1347,15 @@ wheels = [
 ]
 
 [[package]]
+name = "persist-queue"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2f/9e/865b2a173a272d2f52b0f50534e13c38c159877251a987e0863fc7376acd/persist_queue-1.1.0.tar.gz", hash = "sha256:4c042a3d39c9af4fa24497da76697fb4fff7abe6af04bcf55f099e0c23bc2c67", size = 39294, upload-time = "2025-10-25T13:21:28.339Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/07/88/7248345679ad5001cdc0211eb83303c62659f86ae7024170c0bc0afd4e4e/persist_queue-1.1.0-py3-none-any.whl", hash = "sha256:be431ad90cd57621be5563dcd2424e21d81db3bb8cdfb918ade722369d640763", size = 53076, upload-time = "2025-10-25T13:21:26.577Z" },
+]
+
+[[package]]
 name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1640,6 +1649,7 @@ dependencies = [
     { name = "ipython", version = "8.39.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11' and sys_platform == 'linux'" },
     { name = "ipython", version = "9.13.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' and sys_platform == 'linux'" },
     { name = "ipywidgets", marker = "sys_platform == 'linux'" },
+    { name = "persist-queue", marker = "sys_platform == 'linux'" },
     { name = "pillow", marker = "sys_platform == 'linux'" },
 ]
 
@@ -1681,6 +1691,7 @@ requires-dist = [
     { name = "ipython" },
     { name = "ipywidgets" },
     { name = "litert-lm-api", marker = "extra == 'litert'", specifier = "==0.16.0" },
+    { name = "persist-queue", specifier = "==1.1.0" },
     { name = "pillow" },
     { name = "requests", marker = "extra == 'litert'" },
 ]

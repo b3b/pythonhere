@@ -22,8 +22,9 @@ REFERENCE_NAMES = {
     "litert.md",
     "midi.md",
     "plyer.md",
+    "tasks.md",
 }
-RUNTIME_PROMPT_NAMES = REFERENCE_NAMES - {"litert.md"}
+RUNTIME_PROMPT_NAMES = REFERENCE_NAMES - {"litert.md", "tasks.md"}
 
 
 def test_pythonhere_skill_files_exist():
