@@ -1,5 +1,6 @@
 """Tests for the durable sequential task runner."""
 
+import json
 import subprocess
 import sys
 import threading
@@ -28,6 +29,40 @@ def finish(runner, execute, *, setup=None):
     runner.start(execute, setup=setup)
     assert runner.wait(5)
     assert runner.status()["worker_error"] is None
+
+
+def test_export_results_snapshot(runner, tmp_path):
+    runner.add([{"id": "a", "text": "Привет 🌍"}, {"id": "b"}])
+    destination = tmp_path / "exports" / "results.json"
+    assert runner.export_results(destination) == destination
+    assert json.loads(destination.read_text(encoding="utf-8")) == runner.results()
+    assert "Привет 🌍" in destination.read_text(encoding="utf-8")
+
+    finish(runner, lambda task, context: task["id"])
+    runner.export_results(str(destination))
+    records = json.loads(destination.read_text(encoding="utf-8"))
+    assert [record["result"] for record in records] == ["a", "b"]
+    assert all(record["status"] == "done" for record in records)
+
+
+def test_export_results_empty(runner, tmp_path):
+    destination = runner.export_results(tmp_path / "empty.json")
+    assert json.loads(destination.read_text(encoding="utf-8")) == []
+
+
+def test_export_results_write_failure_preserves_file(runner, tmp_path, monkeypatch):
+    destination = tmp_path / "results.json"
+    destination.write_text("previous export", encoding="utf-8")
+
+    def fail_dump(value, stream, **kwargs):
+        stream.write("partial")
+        raise OSError("disk full")
+
+    monkeypatch.setattr(json, "dump", fail_dump)
+    with pytest.raises(OSError, match="disk full"):
+        runner.export_results(destination)
+    assert destination.read_text(encoding="utf-8") == "previous export"
+    assert list(tmp_path.glob(".results.json.tmp-*")) == []
 
 
 def test_retry_order_and_reopen(module, runner, tmp_path):

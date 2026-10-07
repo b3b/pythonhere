@@ -92,6 +92,33 @@ results = %there get runner.results()
 results
 ```
 
+For larger results, export a JSON snapshot on the device and download the file:
+
+```{code-cell} ipython3
+%%there --worker
+runner.export_results("task-results.json")
+```
+
+```{code-cell} ipython3
+%there download task-results.json ./task-results.json
+```
+
+Load the downloaded file in the notebook:
+
+```{code-cell} ipython3
+import json
+
+with open("task-results.json", encoding="utf-8") as f:
+    results = json.load(f)
+```
+
+The export includes all task records, including pending and failed tasks, in
+submission order. Export after completion for final results, or during execution
+for a snapshot. The helper writes UTF-8 JSON with readable Unicode characters
+and atomically replaces an existing file. Relative paths use the device's current
+working directory, which is PythonHere's upload directory by default. This avoids
+a large `%there get` response, but still loads the full snapshot into device memory.
+
 ## Wait for completion
 
 Run this cell to wait up to 50 seconds while keeping the device's UI responsive:

@@ -185,7 +185,9 @@ def _registry_key(path: Path) -> str:
     return str(path.resolve())
 
 
-def _atomic_write_json(path: Path, value: Mapping[str, Any]) -> None:
+def _atomic_write_json(
+    path: Path, value: Mapping[str, Any] | list[dict[str, Any]]
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
 
     tmp = path.with_name(f".{path.name}.tmp-{os.getpid()}-{threading.get_ident()}")
@@ -808,6 +810,23 @@ class TaskRunner:
             self._ensure_open()
             rows = sorted(self._queue.queue(), key=lambda row: row["id"])
             return [self._public_record(row) for row in rows]
+
+    def export_results(self, path: str | os.PathLike[str]) -> Path:
+        """Atomically save a results snapshot as UTF-8 JSON and return its path.
+
+        Includes all task records in submission order, just like results().
+        Relative paths use the current working directory (PythonHere's upload
+        directory by default), for retrieval with ``%there download``.
+        Parent directories are created and an existing file is replaced only
+        after a successful write. Run with ``%%there --worker`` for large runs.
+
+        This avoids a large ``%there get`` response, but still materializes the
+        complete results snapshot in device memory.
+        """
+        snapshot = self.results()
+        destination = Path(path)
+        _atomic_write_json(destination, snapshot)
+        return destination
 
     def failed(self) -> list[dict[str, Any]]:
         """Return permanently failed task records."""
