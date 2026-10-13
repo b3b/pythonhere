@@ -72,6 +72,8 @@ async def test_run_ssh_server_clears_config_ready_after_start_error(mocker):
 @pytest.mark.asyncio
 async def test_run_ssh_server_reports_wait_closed_error(mocker):
     class BrokenServer:
+        host_key_sha256 = "SHA256:test"
+
         async def wait_closed(self):
             raise RuntimeError("server failed")
 
@@ -84,6 +86,7 @@ async def test_run_ssh_server_reports_wait_closed_error(mocker):
 
     start_server.assert_called_once()
     assert app.ssh_server_started.is_set()
+    assert app.ssh_host_key_sha256 == "SHA256:test"
     exception = show_exception_popup.call_args.args[0]
     assert isinstance(exception, RuntimeError)
     assert str(exception) == "server failed"
@@ -124,6 +127,9 @@ async def test_new_host_key_is_ed25519_and_legacy_key_is_untouched(
 
         host_key = tmp_path / "ssh_host_key"
         assert asyncssh.read_private_key(host_key).get_algorithm() == "ssh-ed25519"
+        assert app.ssh_host_key_sha256 == asyncssh.read_private_key(
+            host_key
+        ).get_fingerprint("sha256")
         assert legacy_key.read_bytes() == legacy_contents
         running_app.on_ssh_connection_made.assert_called_once_with()
     finally:

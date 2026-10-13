@@ -1,6 +1,9 @@
 #:kivy 1.0
 #:import ConnectionAddressLabel ui_here.connection_address_here.ConnectionAddressLabel
 #:import ConnectionAddressInfoBox ui_here.connection_address_here.ConnectionAddressInfoBox
+#:import dp kivy.metrics.dp
+#:import kivy_data_dir kivy.kivy_data_dir
+#:import join os.path.join
 
 <ConnectionAddressLabel>:
     text: f"{tc('↳', 3)} {tc(self.address, 2)} ({self.interface})"
@@ -22,6 +25,7 @@
         font_size: "30sp"
 
     ScrollView:
+        id: address_scroll
         do_scroll_x: False
         size_hint: 1, 1
 
@@ -30,3 +34,39 @@
             orientation: "vertical"
             size_hint: 1, None
             height: self.minimum_size[1]
+
+    BoxLayout:
+        id: fingerprint_footer
+        orientation: "vertical"
+        size_hint: 1, None
+        height: self.minimum_height
+        spacing: dp(6)
+        padding: 0, dp(16), dp(20), dp(20)
+        canvas.before:
+            Color:
+                rgba: 0.20, 0.24, 0.27, 1
+            Line:
+                points: self.x, self.y + self.height, self.x + self.width - dp(20), self.y + self.height
+                width: dp(0.5)
+
+        Label:
+            id: fingerprint_heading
+            text: "SSH host key fingerprint"
+            size_hint: 1, None
+            text_size: self.width, None
+            height: self.texture_size[1]
+            halign: "left"
+            font_size: "15sp"
+            color: 0.60, 0.64, 0.67, 1
+
+        Label:
+            id: fingerprint_value
+            text: app.ssh_host_key_sha256
+            markup: False
+            size_hint: 1, None
+            text_size: self.width, None
+            height: self.texture_size[1]
+            halign: "left"
+            font_name: join(kivy_data_dir, 'fonts', 'RobotoMono-Regular.ttf')
+            font_size: "16sp"
+            color: 0.91, 0.94, 0.96, 1

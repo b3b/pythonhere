@@ -7,7 +7,13 @@ from unittest.mock import PropertyMock
 import pytest
 from asyncssh import PermissionDenied
 from enum_here import ScreenName, ServerState
+from kivy.clock import Clock
+from kivy.core.window import Window
+from kivy.graphics import Line
+from kivy.metrics import dp
+from kivy.uix.label import Label
 from main import PythonHereApp, configure_logging, main
+from ui_here.connection_address_here import ConnectionAddressInfoBox
 from ui_here.server_screen_here import ServerScreenManager
 from version_here import __version__
 
@@ -67,6 +73,111 @@ def test_server_screen_update_states(mocker):
     ServerScreenManager.update.__wrapped__(screen)
     assert screen.current == ServerState.ready
     unschedule.assert_called_once_with(screen.update_event)
+
+
+@pytest.mark.asyncio
+async def test_connection_screen_shows_full_fingerprint_and_wraps(app_instance):
+    screen = app_instance.root.ids.here_screen_manager.get_screen(ServerState.ready)
+    box = next(
+        widget
+        for widget in screen.walk()
+        if isinstance(widget, ConnectionAddressInfoBox)
+    )
+    fingerprint = app_instance.ssh_host_key_sha256
+    assert fingerprint.startswith("SHA256:")
+    label = next(
+        widget
+        for widget in box.walk()
+        if isinstance(widget, Label) and widget.text == fingerprint
+    )
+    assert not label.markup
+
+    app_instance.ssh_host_key_sha256 = "SHA256:" + "a" * 43
+    assert label.text == app_instance.ssh_host_key_sha256
+    label.size_hint_x = None
+    label.width = 160
+    label.texture_update()
+    Clock.tick()
+
+    assert label.texture_size[0] <= label.width
+    assert label.texture_size[1] > label.font_size * 2
+    assert label.height == label.texture_size[1]
+
+
+@pytest.mark.asyncio
+async def test_fingerprint_footer_stays_fixed_on_scroll_resize_and_navigation(
+    app_instance,
+):
+    manager = app_instance.root.ids.here_screen_manager
+    manager.current = ServerState.ready
+    panel = manager.current_screen.children[0]
+    footer = panel.ids.fingerprint_footer
+    scroll = panel.ids.address_scroll
+    heading = panel.ids.fingerprint_heading
+    value = panel.ids.fingerprint_value
+    assert footer.parent is panel
+    assert scroll.parent is panel
+    assert not any(
+        isinstance(widget, Label) and "THERE_HOST_KEY_SHA256" in widget.text
+        for widget in panel.walk()
+    )
+    for number in range(40):
+        panel.ids.address_list.add_widget(
+            Label(text=f"Address {number}", size_hint_y=None, height=dp(30))
+        )
+
+    wrapped_height = None
+    for size in ((320, 640), (800, 480), (320, 640)):
+        Window.size = size
+        for _ in range(8):
+            await asyncio.sleep(0.02)
+        assert panel.width == pytest.approx(size[0]), (
+            Window.size,
+            app_instance.root.size,
+            panel.size,
+            value.size,
+        )
+        assert footer.y == pytest.approx(panel.y)
+        assert footer.height == pytest.approx(footer.minimum_height)
+        assert scroll.height > 0
+        assert scroll.y == pytest.approx(footer.y + footer.height)
+        assert value.height == value.texture_size[1]
+        if size[0] == 320:
+            wrapped_height = value.height
+        else:
+            assert value.height < wrapped_height
+
+        before_scroll = tuple(footer.pos), tuple(footer.size)
+        scroll.scroll_y = 0
+        for _ in range(3):
+            await asyncio.sleep(0.02)
+        assert (tuple(footer.pos), tuple(footer.size)) == before_scroll
+
+        for _ in range(3):
+            app_instance.root.switch_screen(ScreenName.settings)
+            await asyncio.sleep(0.02)
+            app_instance.root.switch_screen(ScreenName.here)
+            for _ in range(3):
+                await asyncio.sleep(0.02)
+            dividers = [
+                instruction
+                for instruction in footer.canvas.before.children
+                if isinstance(instruction, Line)
+            ]
+            assert len(dividers) == 1
+            divider = dividers[0]
+            assert divider.points == pytest.approx(
+                [
+                    footer.x,
+                    footer.y + footer.height,
+                    footer.x + footer.width - dp(20),
+                    footer.y + footer.height,
+                ]
+            )
+            assert heading.y + heading.height <= divider.points[1] - dp(16)
+
+    # Allow the final screen transition to complete as it does in normal use.
+    await asyncio.sleep(0.5)
 
 
 @pytest.mark.asyncio

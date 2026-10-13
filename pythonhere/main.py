@@ -26,6 +26,7 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.config import Config, ConfigParser
 from kivy.logger import Logger
+from kivy.properties import StringProperty  # pylint: disable=no-name-in-module
 from patches_here import monkeypatch_kivy
 from server_here import run_ssh_server
 from window_here import reset_window_environment
@@ -41,6 +42,8 @@ def configure_logging():
 
 class PythonHereApp(App):
     """PythonHere main app."""
+
+    ssh_host_key_sha256 = StringProperty("")
 
     def __init__(self):
         super().__init__()

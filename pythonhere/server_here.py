@@ -39,6 +39,7 @@ async def run_ssh_server(app):
                 namespace=app.ssh_server_namespace,
                 server_factory=PythonHereServer,
             )
+            app.ssh_host_key_sha256 = server.host_key_sha256
         except Exception as exc:
             Logger.error("PythonHere: SSH server start error")
             Logger.exception(exc)
