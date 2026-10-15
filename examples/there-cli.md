@@ -11,7 +11,7 @@ codes.
 ## Connect to the app
 
 Start PythonHere on the target device, then work from a directory containing a
-[`there.env`](https://herethere.me/pythonhere/examples/commands.html#there-env-example)
+[`there.env`](commands.md#there-env-example)
 connection file, or one of its descendants. Check the installed interface and
 target readiness:
 
@@ -28,12 +28,6 @@ there --json --config /path/to/there.env ping
 
 Options for the whole invocation, including `--json`, `--config`, `--timeout`,
 and `--max-output`, go before the command name.
-
-Host-key verification is optional. To enable it, uncomment
-`THERE_HOST_KEY_SHA256` in the
-[`there.env` example](commands.md#there-env-example) and replace the placeholder
-with the SSH host-key fingerprint shown on PythonHere's connection screen.
-Leave the setting commented out for the usual connection setup.
 
 ## Worker execution
 

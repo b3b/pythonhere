@@ -138,6 +138,32 @@ root_size
 Use `%there get` for small and inspectable values. For large text, binary data,
 images, CSV files, or directories, write a remote file and use `%there download`.
 
+### put
+
+Transfer a local notebook variable into PythonHere's live Python namespace:
+
+```{code-cell}
+config = {"temperature": 0.2, "top_k": 40}
+%there put config
+```
+
+The variable is then available to code running on the device:
+
+```{code-cell}
+%%there
+print(config)
+```
+
+An optional second name sets the remote variable name:
+
+```{code-cell}
+local_tasks = [{"id": "a", "value": 1}, {"id": "b", "value": 2}]
+%there put local_tasks device_tasks
+```
+
+`put` takes a local variable name, not an expression. Use it for small or
+medium in-memory values. For large data or files, use `%there upload`.
+
 ### kv
 
 ```{code-cell}

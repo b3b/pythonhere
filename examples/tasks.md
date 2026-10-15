@@ -20,7 +20,7 @@ interrupted task becomes runnable again.
 
 ## Connect to PythonHere
 
-```{code-cell} ipython3
+```{code-cell} python
 %load_ext pythonhere
 %connect-there
 ```
@@ -32,7 +32,7 @@ contain plain JSON-compatible values. If `"squares-example"` already exists
 from an earlier attempt, use a new name or delete the old run with the
 [cleanup cell](#clean-up) at the end.
 
-```{code-cell} ipython3
+```{code-cell} python
 %%there
 import time
 
@@ -63,21 +63,22 @@ inspect it.
 
 ## Inspect progress and results
 
-```{code-cell} ipython3
+```{code-cell} python
 status = %there get runner.status()
 status
 ```
 
 You can inspect results before the whole run finishes:
 
-```{code-cell} ipython3
+```{code-cell} python
+:tags: ["hide-output"]
 results = %there get runner.results()
 results
 ```
 
 To wait briefly before checking progress again:
 
-```{code-cell} ipython3
+```{code-cell} python
 %%there --worker
 runner.wait(timeout=1)
 print(runner.status())
@@ -90,7 +91,7 @@ This waits at most one second and returns sooner if the worker has stopped.
 While tasks are still running, you can pause them. `pause()` lets the current
 task finish, and `wait()` waits for the pause to take effect:
 
-```{code-cell} ipython3
+```{code-cell} python
 %%there --worker
 runner.pause()
 runner.wait()
@@ -99,7 +100,7 @@ print(runner.status())
 
 Resume any pending tasks with the same executor. Completed tasks are kept:
 
-```{code-cell} ipython3
+```{code-cell} python
 %%there
 runner.start(execute_task)
 ```
@@ -111,7 +112,7 @@ If all tasks have already completed, there is nothing left to pause or resume.
 Wait for all remaining work, then show the final counts. `--worker` keeps the
 app's UI responsive while this cell waits:
 
-```{code-cell} ipython3
+```{code-cell} python
 %%there --worker
 runner.wait()
 status = runner.status()
@@ -132,7 +133,7 @@ Failed: 1
 have been processed, including any that exhausted their retries; it does not
 mean every task succeeded. Inspect the deliberately failed task:
 
-```{code-cell} ipython3
+```{code-cell} python
 failures = %there get runner.failed()
 failures
 ```
@@ -144,18 +145,18 @@ and the intentional `ValueError`. The other nine tasks have their square results
 
 For larger results, export a JSON snapshot on the device and download the file:
 
-```{code-cell} ipython3
+```{code-cell} python
 %%there --worker
 runner.export_results("task-results.json")
 ```
 
-```{code-cell} ipython3
+```{code-cell} python
 %there download task-results.json ./task-results.json
 ```
 
 Load the downloaded file in the notebook:
 
-```{code-cell} ipython3
+```{code-cell} python
 import json
 
 with open("task-results.json", encoding="utf-8") as f:
@@ -181,7 +182,7 @@ the results and the failed task survived the restart. The task that exhausted
 its retries stays failed; calling `start()` does not retry it again. To try recovery of unfinished work separately,
 restart the app while a fresh run is executing, then reconnect and run this cell:
 
-```{code-cell} ipython3
+```{code-cell} python
 %%there
 import time
 
@@ -204,13 +205,14 @@ runner.start(execute_task)
 
 Wait for any unfinished work, then inspect the saved results:
 
-```{code-cell} ipython3
+```{code-cell} python
 %%there --worker
 runner.wait()
 print(runner.status())
 ```
 
-```{code-cell} ipython3
+```{code-cell} python
+:tags: ["hide-output"]
 saved_results = %there get runner.results()
 saved_results
 ```
@@ -254,7 +256,7 @@ this example with the same name. Skip this cell to keep its saved results.
 This deletes only `"squares-example"` and its tasks/results; other runs and
 exported JSON files are untouched.
 
-```{code-cell} ipython3
+```{code-cell} python
 %%there --worker
 from tasks_here import TaskRunner, TaskRunNotFoundError
 
