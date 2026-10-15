@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.4.1
+-----
+
+This release adds persistent task execution and SSH host-key fingerprint
+display, and updates herethere.
+
+* Added ``tasks_here.TaskRunner`` for persistent sequential task execution,
+  with retries, pause/resume, progress inspection, and recovery after app restart
+* Added ``TaskRunner.export_results()`` to save task results as a JSON file
+  for download from the device
+* Added the SSH host-key SHA-256 fingerprint to the connection screen
+* Updated ``herethere`` to 0.3.3, adding optional SSH host-key verification
+  and ``%there put`` / ``Client.put()`` for transferring local Python values
+  into the remote live namespace
+
 0.4.0
 -----
 

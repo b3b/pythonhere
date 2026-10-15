@@ -49,7 +49,20 @@ THERE_USERNAME=here
 
 # Password, as set in PythonHere app Settings section
 THERE_PASSWORD=xxx
+
+# Optional: verify the server fingerprint shown on the app's connection screen.
+# THERE_HOST_KEY_SHA256=SHA256:<fingerprint-from-the-app>
 ```
+
+Host-key verification is optional; leave the line commented out for the usual
+connection setup. To enable it, copy the SSH host-key fingerprint from
+PythonHere's connection screen, replace the placeholder, and uncomment the line.
+The client then checks the fingerprint before authentication on every connection
+and reconnect. This setting works with both Jupyter and the `there` CLI.
+
+The fingerprint stays the same when the device's IP address changes. If the SSH
+host key is replaced or regenerated, compare the new fingerprint with the one
+shown in the app before updating the config.
 
 +++
 

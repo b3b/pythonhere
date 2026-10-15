@@ -29,6 +29,12 @@ there --json --config /path/to/there.env ping
 Options for the whole invocation, including `--json`, `--config`, `--timeout`,
 and `--max-output`, go before the command name.
 
+Host-key verification is optional. To enable it, uncomment
+`THERE_HOST_KEY_SHA256` in the
+[`there.env` example](commands.md#there-env-example) and replace the placeholder
+with the SSH host-key fingerprint shown on PythonHere's connection screen.
+Leave the setting commented out for the usual connection setup.
+
 ## Worker execution
 
 By default, `run` and `get` execute on the application's main thread. Blocking

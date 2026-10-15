@@ -32,7 +32,14 @@ THERE_USERNAME=here
 
 # Password, as set in PythonHere app Settings section
 THERE_PASSWORD=xxx
+
+# Optional: verify the server fingerprint shown on the app's connection screen.
+# THERE_HOST_KEY_SHA256=SHA256:<fingerprint-from-the-app>
 ```
+
+Host-key verification is optional. Leave the line commented out unless you want
+to enable it; see the [connection settings](commands.md#there-env-example) for
+details.
 
 ## When using with Docker 
 
